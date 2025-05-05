@@ -6,6 +6,11 @@ from src.auth.routes import(
     profile_router,
     user_router
 )
+from src.common.db import (
+    Base,
+    engine,
+)
+from src.common.seed import seed_db
 from src.complaints.routes import complaint_router
 from src.hostels.routes import(
     hall_router,
@@ -15,6 +20,19 @@ from src.hostels.routes import(
 from src.chat.routes import chat_router
 
 app = FastAPI()
+
+@app.on_event("startup")
+def on_startup():
+    Base.metadata.create_all(bind=engine)  # create tables
+    seed_db()  # seed data
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(complaint_router)
 app.include_router(auth_router)

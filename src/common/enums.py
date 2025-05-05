@@ -9,6 +9,7 @@ class ComplainCategory(str, Enum):
 class Status(str, Enum):
     CLOSED = "closed"
     OPENED = "opened"
+    RESOLVED = "resolved"
     
 class AllocationStatus(Enum):
     ALLOCATED = "allocated"
