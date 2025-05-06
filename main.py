@@ -28,7 +28,7 @@ def on_startup():
 
 origins = [
     "https://v0-residence-management-system-eight.vercel.app",
-    
+    "https://hms-91q1.onrender.com",
     ]
 
 app.add_middleware(
