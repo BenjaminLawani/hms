@@ -27,7 +27,7 @@ def on_startup():
     seed_db()  # seed data
 
 origins = [
-    "https://v0-residence-management-system-eight.vercel.app"
+    "https://v0-residence-management-system-eight.vercel.app",
     
     ]
 
