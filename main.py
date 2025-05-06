@@ -42,4 +42,8 @@ app.include_router(hall_router)
 app.include_router(chat_router)
 app.include_router(room_router),
 app.include_router(allocation_router)
+
+@app.get("/health")
+def health():
+    return {"ping":"pong"}
 print(app)
