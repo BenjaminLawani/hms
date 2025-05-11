@@ -10,7 +10,6 @@ GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 
 from fastapi_mail import ConnectionConfig
 
-# Email configuration for FastAPI Mail
 EMAIL_CONFIG = ConnectionConfig(
     MAIL_USERNAME=os.environ["MAIL_USERNAME"],
     MAIL_PASSWORD=os.environ["MAIL_PASSWORD"],

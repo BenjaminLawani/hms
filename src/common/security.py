@@ -57,6 +57,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     try:
         payload = jwt_decode(token)
         user_id: UUID = payload.get("sub")
+        is_admin: bool = payload.get("is_admin")
+        if is_admin is None:
+            raise credentials_exception
+        
         if user_id is None:
             raise credentials_exception
     except Exception:

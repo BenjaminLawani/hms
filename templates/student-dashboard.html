@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> HostelHub Student Dashboard</title>
+</head>
+<body>
+    <style>
+        :root {
+            --primary-color: #3B82F6; /* Blue 500 */
+            --primary-color-hover: #2563EB; /* Blue 600 */
+            --primary-color-light: #EFF6FF; /* Blue 50 */
+            --text-color-primary: #1F2937; /* Gray 800 */
+            --text-color-secondary: #4B5563; /* Gray 600 */
+            --text-color-muted: #6B7280; /* Gray 500 */
+            --bg-color: #F9FAFB; /* Gray 50 */
+            --card-bg-color: #FFFFFF;
+            --border-color: #E5E7EB; /* Gray 200 */
+            --input-border-color: #D1D5DB; /* Gray 300 */
+            --input-focus-border-color: var(--primary-color);
+            --danger-color: #EF4444; /* Red 500 */
+            --danger-color-hover: #DC2626; /* Red 600 */
+            --danger-text-color: #991B1B; /* Red 800 */
+            --danger-bg-light: #FEE2E2; /* Red 100 */
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color-primary);
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background-color: var(--card-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        nav {
+            display: flex;
+            padding: 12px 24px;
+            background-color: var(--card-bg-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+
+        main {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color-primary);
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-color-primary);
+            margin-top: 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color-primary);
+            margin-top: 28px;
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: var(--text-color-secondary);
+            font-size: 14px;
+            margin: 8px 0;
+        }
+
+        /* Navigation */
+        nav button {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-color-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            margin-right: 10px;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        nav button:hover {
+            background-color: var(--primary-color-light);
+            color: var(--primary-color-hover);
+        }
+
+        nav button.active {
+            background-color: var(--primary-color-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+
+        /* Forms */
+        form {
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--input-border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: var(--card-bg-color);
+            color: var(--text-color-primary);
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--input-focus-border-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Light blue shadow */
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* General Button Styling */
+        button, .button { /* Added .button class for non-form buttons if needed */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none; /* For a elements styled as buttons */
+        }
+
+        /* Primary Button (form submits, main actions) */
+        button[type="submit"], .button-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        button[type="submit"]:hover, .button-primary:hover {
+            background-color: var(--primary-color-hover);
+            box-shadow: var(--shadow);
+        }
+
+        /* Secondary Button (logout, vacate) */
+        .button-secondary {
+            background-color: var(--border-color);
+            color: var(--text-color-secondary);
+        }
+        .button-secondary:hover {
+            background-color: #D1D5DB; /* Gray 300 */
+            color: var(--text-color-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Danger Button (delete account) */
+        .button-danger {
+            background-color: var(--danger-bg-light);
+            color: var(--danger-text-color);
+            border: 1px solid var(--danger-color);
+        }
+        .button-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px; /* Ensure space for arrow */
+        }
+
+        /* User Info */
+        #userInfo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #userName {
+            font-weight: 500;
+            color: var(--text-color-secondary);
+        }
+
+        #logoutBtn { /* Apply secondary button style */
+            background-color: #E5E7EB; /* Gray 200 */
+            color: #374151; /* Gray 700 */
+            padding: 8px 16px;
+        }
+
+        #logoutBtn:hover {
+            background-color: #D1D5DB; /* Gray 300 */
+        }
+
+        /* Sections */
+        .dashboard-section {
+            display: none;
+            background-color: var(--card-bg-color);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+        }
+
+        /* Profile Section */
+        #profileDetails p {
+            margin: 12px 0;
+            font-size: 15px;
+        }
+        #profileDetails p span {
+            font-weight: 500;
+            color: var(--text-color-primary);
+        }
+
+        #deleteAccountBtn { /* Apply danger button style */
+            background-color: var(--danger-bg-light);
+            color: var(--danger-text-color);
+            /* border: 1px solid var(--danger-color); */ /* Optional: if you want a border */
+        }
+        #deleteAccountBtn:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* Room Allocation */
+        #currentAllocation, #availableHalls, #roomAllocationRequestBox { /* Renamed roomAllocation div for clarity */
+            background-color: var(--bg-color); /* Slightly different bg for sub-sections */
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        #hallsList ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        #hallsList li {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-bg-color);
+            transition: box-shadow 0.2s ease-in-out;
+        }
+        #hallsList li:hover {
+            box-shadow: var(--shadow);
+        }
+
+        #hallsList h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+        #hallsList p {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        #vacateRoomBtn { /* Apply secondary button style */
+             background-color: #E5E7EB; /* Gray 200 */
+            color: #374151; /* Gray 700 */
+        }
+        #vacateRoomBtn:hover {
+            background-color: #D1D5DB; /* Gray 300 */
+        }
+
+
+        /* Complaints Section */
+        #complaintForm textarea {
+            width: 100%; /* Already handled by global textarea styles */
+        }
+
+        /* Chat Section */
+        #chatContainer {
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Or use vh for viewport height based sizing */
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--card-bg-color);
+        }
+
+        #chatMessages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--bg-color); /* Light gray for message area */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #chatForm {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            margin-bottom: 0;
+            background-color: var(--card-bg-color);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start; /* Align items to start for multi-line textarea */
+        }
+        #chatForm div {
+            flex-grow: 1;
+        }
+        #chatForm label { display: none; } /* Hide label as it's intuitive */
+        #chatForm textarea {
+            min-height: 44px; /* Start with a smaller height */
+            height: 44px;
+            padding: 10px 12px;
+            margin-bottom: 0; /* Remove margin if inside flex */
+        }
+        #chatForm button {
+            height: 44px; /* Match textarea height */
+            flex-shrink: 0; /* Prevent button from shrinking */
+        }
+
+
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 12px;
+            max-width: 75%;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message-bubble strong {
+            display: block;
+            font-size: 0.8em;
+            margin-bottom: 4px;
+            color: var(--text-color-muted);
+        }
+
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px; /* "Tail" effect */
+        }
+        .user-message strong { color: rgba(255,255,255,0.8); }
+
+
+        .assistant-message {
+            background-color: #E5E7EB; /* Gray 200 */
+            color: var(--text-color-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px; /* "Tail" effect */
+        }
+        .assistant-message strong { color: var(--text-color-secondary); }
+
+        .error-message {
+            background-color: var(--danger-bg-light);
+            color: var(--danger-text-color);
+            align-self: flex-start;
+            border: 1px solid var(--danger-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .error-message strong { color: var(--danger-text-color); }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 16px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px;
+            }
+            
+            nav button {
+                margin-right: 0;
+                margin-bottom: 8px;
+                text-align: left;
+            }
+            nav button:last-child {
+                margin-bottom: 0;
+            }
+            
+            #userInfo {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 8px;
+            }
+            main {
+                padding: 16px;
+            }
+            .dashboard-section {
+                padding: 16px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            #chatForm {
+                flex-direction: column;
+            }
+            #chatForm button {
+                width: 100%;
+            }
+        }
+    </style>
+    <header>
+        <h1>Student Dashboard</h1>
+        <div id="userInfo">
+            <span id="userName">Loading...</span>
+            <button id="logoutBtn" class="button">Logout</button> <!-- Added class for styling -->
+        </div>
+    </header>
+
+    <nav>
+        <button data-section="profile">Profile</button>
+        <button data-section="room">Room Allocation</button>
+        <button data-section="complaints">Complaints</button>
+        <button data-section="chat">Chat Assistant</button>
+    </nav>
+
+    <main>
+        <!-- Profile Section -->
+        <section id="profile" class="dashboard-section">
+            <h2>Your Profile</h2>
+            <div id="profileDetails">
+                <p>Name: <span id="profileName">Loading...</span></p>
+                <p>Email: <span id="profileEmail">Loading...</span></p>
+                <p>Level: <span id="profileLevel">Loading...</span></p>
+            </div>
+            <h3>Update Profile</h3>
+            <form id="updateProfileForm">
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" name="firstName">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName">
+                </div>
+                <div class="form-group">
+                    <label for="profilePhoto">Profile Photo URL:</label>
+                    <input type="text" id="profilePhoto" name="profilePhoto">
+                </div>
+                <button type="submit">Update Profile</button>
+            </form>
+            <div>
+                <h3>Delete Account</h3>
+                <p>This action is permanent and cannot be undone.</p>
+                <button id="deleteAccountBtn" class="button-danger">Delete My Account</button>
+            </div>
+        </section>
+
+        <!-- Room Allocation Section -->
+        <section id="room" class="dashboard-section">
+            <h2>Room Allocation</h2>
+            <div id="currentAllocation">
+                <h3>Your Current Room</h3>
+                <div id="allocationDetails">Loading...</div>
+                <!-- Vacate button will be dynamically added here by JS -->
+            </div>
+            <div id="availableHalls">
+                <h3>Available Halls</h3>
+                <div id="hallsList">Loading...</div>
+            </div>
+            <div id="roomAllocationRequestBox"> <!-- Changed ID for clarity -->
+                <h3>Request Room</h3>
+                <form id="roomRequestForm">
+                    <div class="form-group">
+                        <label for="hallSelect">Select Hall:</label>
+                        <select id="hallSelect" name="hallId">
+                            <option value="">Select a hall</option>
+                        </select>
+                    </div>
+                    <div id="availableRoomsContainer" style="display:none" class="form-group">
+                        <label for="roomSelect">Select Room:</label>
+                        <select id="roomSelect" name="roomId">
+                            <option value="">Select a room</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="academicYear">Academic Year:</label>
+                        <input type="text" id="academicYear" name="academicYear" placeholder="e.g., 2023/2024">
+                    </div>
+                    <button type="submit">Request Room</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Complaints Section -->
+        <section id="complaints" class="dashboard-section">
+            <h2>Complaints</h2>
+            <div>
+                <h3>Submit a Complaint</h3>
+                <form id="complaintForm">
+                    <div class="form-group">
+                        <label for="complaintTitle">Title:</label>
+                        <input type="text" id="complaintTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaintCategory">Category:</label>
+                        <select id="complaintCategory" name="category" required>
+                            <option value="GENERAL">Maintenance</option>
+                            <option value="SECURITY">Security</option>
+                            <option value="PLUMBING">Plumbing</option>
+                            <option value="ELECTRICAL">Electrical</option>
+                            <option value="FURNITURE">Furniture</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaintContent">Description:</label>
+                        <textarea id="complaintContent" name="content" rows="5" required></textarea>
+                    </div>
+                    <button type="submit">Submit Complaint</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Chat Assistant Section -->
+        <section id="chat" class="dashboard-section">
+            <h2>Chat Assistant</h2>
+            <div id="chatContainer">
+                <div id="chatMessages">
+                    <!-- Example messages:
+                    <div class="message-bubble assistant-message"><strong>Assistant:</strong> Hello! How can I help you today?</div>
+                    <div class="message-bubble user-message"><strong>You:</strong> I need help with room allocation.</div>
+                    -->
+                </div>
+                <form id="chatForm">
+                    <div>
+                        <label for="chatQuery">Ask a question:</label>
+                        <textarea id="chatQuery" name="query" rows="2" placeholder="Type your message..." required></textarea>
+                    </div>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Global variables
+        let token = localStorage.getItem('token');
+        let currentUser = null;
+        
+        // Check if user is logged in
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!token) {
+                window.location.href = '/auth/login'; // Assuming your login page is at /auth/login
+                return;
+            }
+            
+            try {
+                // Set up navigation
+                document.querySelectorAll('nav button').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        showSection(btn.dataset.section);
+                    });
+                });
+                
+                // Load user profile data first, as other functions might depend on currentUser
+                await loadUserProfile(); 
+                
+                // Show only profile section initially
+                showSection('profile'); // Call this after profile is loaded if it depends on profile data
+
+                // Load other sections data
+                loadCurrentAllocation();
+                loadAvailableHalls();
+                
+                // Set up form submissions
+                document.getElementById('updateProfileForm').addEventListener('submit', updateProfile);
+                document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
+                document.getElementById('roomRequestForm').addEventListener('submit', requestRoom);
+                document.getElementById('complaintForm').addEventListener('submit', submitComplaint);
+                document.getElementById('chatForm').addEventListener('submit', sendChatQuery);
+                document.getElementById('logoutBtn').addEventListener('click', logout);
+                
+                // Set up hall select change handler
+                document.getElementById('hallSelect').addEventListener('change', loadAvailableRooms);
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                if (error.status === 401) {
+                    // Token expired
+                    localStorage.removeItem('token');
+                    window.location.href = '/auth/login';
+                } else {
+                    // Generic error message for the user
+                    alert('Could not initialize the dashboard. Please try again later. ' + (error.message || ''));
+                }
+            }
+        });
+        
+        // Show selected section, hide others
+        function showSection(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) {
+                 activeSection.style.display = 'block';
+            }
+
+            // Update active nav button
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.section === sectionId) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        // API request helper function
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            const headers = {
+                'Authorization': `Bearer ${token}`
+            };
+            
+            const options = {
+                method,
+                headers
+            };
+            
+            if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) { // PATCH added for completeness
+                options.body = JSON.stringify(data);
+                headers['Content-Type'] = 'application/json';
+            }
+            
+            const response = await fetch(endpoint, options);
+            
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                alert('Your session has expired. Please log in again.');
+                window.location.href = '/auth/login';
+                throw { status: 401, message: 'Unauthorized - Session Expired' };
+            }
+            
+            if (!response.ok) {
+                let errorData = { detail: `API request failed with status ${response.status}` };
+                try {
+                    errorData = await response.json();
+                } catch (e) {
+                    // If response is not JSON, use the default error message
+                }
+                console.error(`API Error ${response.status}:`, errorData);
+                throw { status: response.status, message: errorData.detail || errorData.message || 'API request failed' };
+            }
+            
+            if (response.status === 204) { // No Content
+                return null; 
+            }
+            
+            return await response.json();
+        }
+        
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                const userResponse = await apiRequest('/profile/me', 'GET');
+                currentUser = userResponse;
+                
+                if (!currentUser) {
+                    throw new Error("User data not found.");
+                }
+                
+                document.getElementById('userName').textContent = currentUser.name || 'Student';
+                document.getElementById('profileName').textContent = currentUser.name || 'N/A';
+                document.getElementById('profileEmail').textContent = currentUser.email || 'N/A';
+                document.getElementById('profileLevel').textContent = currentUser.level || 'N/A';
+                
+                const nameParts = (currentUser.name || '').split(' ');
+                document.getElementById('firstName').value = nameParts[0] || '';
+                document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+                document.getElementById('profilePhoto').value = currentUser.profile_photo_url || '';
+                
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                document.getElementById('userName').textContent = 'Error';
+                // Don't alert here, let the main try-catch handle it or show a less intrusive error
+                throw error; // Re-throw to be caught by the main initializer
+            }
+        }
+        
+        // Update profile
+        async function updateProfile(event) {
+            event.preventDefault();
+            
+            const formData = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                profile_photo_url: document.getElementById('profilePhoto').value || null // Send null if empty
+            };
+            
+            try {
+                const response = await apiRequest('/profile/update-profile', 'PUT', formData);
+                alert('Profile updated successfully!');
+                await loadUserProfile(); // Refresh display
+                
+            } catch (error) {
+                console.error('Failed to update profile:', error);
+                alert('Failed to update profile: ' + error.message);
+            }
+        }
+        
+        // Delete account
+        async function deleteAccount() {
+            if (!confirm('Are you sure you want to delete your account? This action is permanent and cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                await apiRequest('/profile/delete-account', 'DELETE');
+                localStorage.removeItem('token');
+                alert('Your account has been successfully deleted.');
+                window.location.href = '/auth/login';
+                
+            } catch (error) {
+                console.error('Failed to delete account:', error);
+                alert('Failed to delete account: ' + error.message);
+            }
+        }
+        
+        // Load current room allocation
+        async function loadCurrentAllocation() {
+            const allocationDetails = document.getElementById('allocationDetails');
+            allocationDetails.innerHTML = '<p>Loading allocation...</p>';
+            try {
+                if (!currentUser || !currentUser.id) {
+                     allocationDetails.innerHTML = '<p>User information not available to fetch allocation.</p>';
+                    return;
+                }
+                
+                // Assuming the endpoint gives allocation directly for the logged-in user (based on token)
+                // If it requires user_id in path, ensure currentUser.id is available
+                const allocations = await apiRequest(`/allocate/user/${currentUser.id}`); // This might return a list
+                
+                if (!allocations || (Array.isArray(allocations) && allocations.length === 0)) {
+                    allocationDetails.innerHTML = '<p>You do not have a current room allocation.</p>';
+                    return;
+                }
+
+                // Assuming we take the first active allocation if multiple are returned
+                const allocation = Array.isArray(allocations) ? allocations.find(a => a.status === 'ALLOCATED' || a.status === 'ACTIVE') || allocations[0] : allocations;
+
+                if (!allocation) {
+                     allocationDetails.innerHTML = '<p>No active room allocation found.</p>';
+                    return;
+                }
+
+                const room = await apiRequest(`/rooms/${allocation.room_id}`);
+                const hall = await apiRequest(`/halls/${room.hall_id}`);
+                
+                allocationDetails.innerHTML = `
+                    <p><strong>Hall:</strong> ${hall.name}</p>
+                    <p><strong>Room:</strong> ${room.room_number}</p>
+                    <p><strong>Academic Year:</strong> ${allocation.academic_year}</p>
+                    <p><strong>Status:</strong> <span style="text-transform: capitalize;">${allocation.status.toLowerCase()}</span></p>
+                    ${ (allocation.status === 'ALLOCATED' || allocation.status === 'ACTIVE') ? 
+                        `<button id="vacateRoomBtn" class="button button-secondary" data-id="${allocation.id}" style="margin-top: 10px;">Vacate Room</button>` : ''}
+                `;
+                
+                if (document.getElementById('vacateRoomBtn')) {
+                    document.getElementById('vacateRoomBtn').addEventListener('click', function() {
+                        vacateRoom(this.dataset.id);
+                    });
+                }
+                
+            } catch (error) {
+                 console.error('Failed to load allocation:', error);
+                if (error.status === 404) {
+                    allocationDetails.innerHTML = '<p>You do not have a room allocation.</p>';
+                } else {
+                    allocationDetails.innerHTML = 
+                        '<p>Failed to load allocation information. ' + error.message + '</p>';
+                }
+            }
+        }
+        
+        // Load available halls
+        async function loadAvailableHalls() {
+            const hallsListDiv = document.getElementById('hallsList');
+            const hallSelect = document.getElementById('hallSelect');
+            hallsListDiv.innerHTML = '<p>Loading available halls...</p>';
+            
+            try {
+                const halls = await apiRequest('/halls');
+                
+                hallSelect.innerHTML = '<option value="">Select a hall</option>'; // Clear existing options
+                hallsListDiv.innerHTML = ''; // Clear halls list
+                
+                if (!halls || halls.length === 0) {
+                    hallsListDiv.innerHTML = '<p>No halls currently available.</p>';
+                    return;
+                }
+                
+                let hallsHtml = '<ul>';
+                halls.forEach(hall => {
+                    hallsHtml += `
+                        <li>
+                            <h4>${hall.name}</h4>
+                            <p>Academic Year: ${hall.academic_year || 'N/A'}</p>
+                            <p>Level Range: ${hall.min_level || 'Any'} - ${hall.max_level || 'Any'}</p>
+                            <p style="color: ${hall.is_open_for_allocation ? 'var(--success-color, green)' : 'var(--danger-color, red)'}; font-weight: 500;">
+                                ${hall.is_open_for_allocation ? 'Open for allocation' : 'Closed for allocation'}
+                            </p>
+                        </li>
+                    `;
+                    
+                    if (hall.is_open_for_allocation) {
+                        const option = document.createElement('option');
+                        option.value = hall.id;
+                        option.textContent = `${hall.name} (${hall.academic_year || 'General'})`;
+                        hallSelect.appendChild(option);
+                    }
+                });
+                hallsHtml += '</ul>';
+                hallsListDiv.innerHTML = hallsHtml;
+                
+            } catch (error) {
+                console.error('Failed to load halls:', error);
+                hallsListDiv.innerHTML = 
+                    '<p>Failed to load halls information. ' + error.message + '</p>';
+            }
+        }
+        
+        // Load available rooms for selected hall
+        async function loadAvailableRooms() {
+            const hallId = document.getElementById('hallSelect').value;
+            const roomsContainer = document.getElementById('availableRoomsContainer');
+            const roomSelect = document.getElementById('roomSelect');
+            
+            roomSelect.innerHTML = '<option value="">Loading rooms...</option>';
+            roomsContainer.style.display = 'none';
+            
+            if (!hallId) {
+                roomSelect.innerHTML = '<option value="">Select a hall first</option>';
+                return;
+            }
+            
+            try {
+                const rooms = await apiRequest(`/allocate/available-rooms/${hallId}`);
+                roomSelect.innerHTML = '<option value="">Select a room</option>'; // Clear loading/previous
+                
+                if (!rooms || rooms.length === 0) {
+                    alert('No rooms currently available in this hall.');
+                    return;
+                }
+                
+                rooms.forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room.id;
+                    option.textContent = `Room ${room.room_number} (Capacity: ${room.capacity}, Available: ${room.capacity - (room.allocations_count || 0)})`;
+                    roomSelect.appendChild(option);
+                });
+                
+                roomsContainer.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Failed to load rooms:', error);
+                alert('Failed to load available rooms: ' + error.message);
+                roomSelect.innerHTML = '<option value="">Error loading rooms</option>';
+            }
+        }
+        
+        // Request room allocation
+        async function requestRoom(event) {
+            event.preventDefault();
+            
+            const roomId = document.getElementById('roomSelect').value;
+            const academicYear = document.getElementById('academicYear').value;
+            
+            if (!currentUser || !currentUser.id) {
+                alert('User information not available. Cannot request room.');
+                return;
+            }
+            if (!roomId) {
+                alert('Please select a hall and then a room.');
+                return;
+            }
+            if (!academicYear.trim()) {
+                alert('Please enter the academic year (e.g., 2023/2024).');
+                return;
+            }
+            
+            const allocationData = {
+                user_id: currentUser.id,
+                room_id: parseInt(roomId),
+                academic_year: academicYear.trim()
+            };
+            
+            try {
+                const allocation = await apiRequest('/allocate', 'POST', allocationData);
+                alert(`Room allocation request submitted successfully! Status: ${allocation.status}`);
+                await loadCurrentAllocation(); 
+                await loadAvailableRooms(); // Refresh available rooms in case capacity changed
+                document.getElementById('roomRequestForm').reset();
+                document.getElementById('availableRoomsContainer').style.display = 'none';
+
+            } catch (error) {
+                console.error('Failed to allocate room:', error);
+                alert('Failed to request room: ' + error.message);
+            }
+        }
+        
+        // Vacate room
+        async function vacateRoom(allocationId) {
+            if (!confirm('Are you sure you want to vacate this room? This action might be irreversible depending on hall policies.')) {
+                return;
+            }
+            
+            try {
+                // The endpoint might be /allocate/{id} with method PUT/PATCH or a specific /vacate endpoint
+                // Assuming /allocate/{id}/vacate with PUT as per original
+                await apiRequest(`/allocate/${allocationId}/vacate`, 'PUT'); 
+                alert('Room vacated successfully!');
+                await loadCurrentAllocation(); 
+                
+            } catch (error) {
+                console.error('Failed to vacate room:', error);
+                alert('Failed to vacate room: ' + error.message);
+            }
+        }
+        
+        // Submit complaint
+        async function submitComplaint(event) {
+            event.preventDefault();
+            
+            const complaintData = {
+                title: document.getElementById('complaintTitle').value.trim(),
+                category: document.getElementById('complaintCategory').value,
+                content: document.getElementById('complaintContent').value.trim(),
+                user_id: currentUser.id // Assuming currentUser is set
+            };
+
+            if (!complaintData.title || !complaintData.content) {
+                alert('Please fill in both title and description for the complaint.');
+                return;
+            }
+            
+            try {
+                const response = await apiRequest('/complaint/create-complaint', 'POST', complaintData);
+                alert('Complaint submitted successfully!');
+                document.getElementById('complaintForm').reset();
+                
+            } catch (error) {
+                console.error('Failed to submit complaint:', error);
+                alert('Failed to submit complaint: ' + error.message);
+            }
+        }
+        
+        // Send chat query
+        async function sendChatQuery(event) {
+            event.preventDefault();
+            
+            const queryInput = document.getElementById('chatQuery');
+            const query = queryInput.value.trim();
+            const chatMessagesDiv = document.getElementById('chatMessages');
+
+            if (!query) return;
+            
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('message-bubble', 'user-message');
+            userMessageDiv.innerHTML = `<strong>You:</strong> ${escapeHtml(query)}`;
+            chatMessagesDiv.appendChild(userMessageDiv);
+            
+            queryInput.value = ''; // Clear input
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Scroll to bottom
+            
+            try {
+                const response = await apiRequest('/chat/query', 'POST', { query });
+                
+                const assistantMessageDiv = document.createElement('div');
+                assistantMessageDiv.classList.add('message-bubble', 'assistant-message');
+                // Assuming response.answer contains plain text. If it can contain HTML, sanitize it.
+                assistantMessageDiv.innerHTML = `<strong>Assistant:</strong> ${escapeHtml(response.answer)}`;
+                chatMessagesDiv.appendChild(assistantMessageDiv);
+                
+            } catch (error) {
+                console.error('Failed to get chat response:', error);
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.classList.add('error-message'); // Using existing error-message class
+                errorMessageDiv.innerHTML = `<strong>Error:</strong> Failed to get response. ${error.message}`;
+                chatMessagesDiv.appendChild(errorMessageDiv);
+            } finally {
+                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; // Scroll to bottom
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                 .replace(/&/g, "&")
+                 .replace(/</g, "<")
+                 .replace(/>/g, ">")
+                 .replace(/"/g, "\"")
+                 .replace(/'/g, "'");
+        }
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            // Optionally, call a backend logout endpoint
+            // await apiRequest('/auth/logout', 'POST'); 
+            alert('You have been logged out.');
+            window.location.href = '/auth/login';
+        }
+    </script>
+</body>
+</html>

@@ -18,7 +18,7 @@ class ComplaintResponse(BaseModel):
 
 class ResolveComplaintRequest(BaseModel):
     """Schema for resolving a single complaint request."""
-    pass  # No extra data needed for resolving a single complaint
+    pass
 
 class BulkResolveRequest(BaseModel):
     """Schema for bulk resolving complaints request."""

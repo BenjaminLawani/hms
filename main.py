@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.auth.routes import(
@@ -18,25 +19,26 @@ from src.hostels.routes import(
     allocation_router
 )
 from src.chat.routes import chat_router
+from src.dashboard.routes import dashboard_router
+
+templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 
-@app.on_event("startup")
+@app.on_event("startup") #TODO: fix deprecations
 def on_startup():
     Base.metadata.create_all(bind=engine)  # create tables
     seed_db()  # seed data
 
-origins = [
-    "https://v0-residence-management-system-eight.vercel.app",
-    "https://hms-91q1.onrender.com",
-    ]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Redirect-URL"]
 )
 
 app.include_router(complaint_router)
@@ -47,6 +49,10 @@ app.include_router(hall_router)
 app.include_router(chat_router)
 app.include_router(room_router),
 app.include_router(allocation_router)
+app.include_router(dashboard_router)
+@app.get("/")
+def root(request: Request):
+    return templates.TemplateResponse('index.html', {'request': request})
 
 @app.get("/health")
 def health():

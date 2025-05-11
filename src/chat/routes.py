@@ -111,6 +111,7 @@ def process_sql_query(query: str, schema_info: str) -> dict:
     sql_prompt = f"""
 You are an expert SQL assistant that converts natural language queries to PostgreSQL queries.
 Based on the following database schema and user query, generate a valid PostgreSQL query.
+Keeping user security as a priority so passwords should not be included in answers
 
 DATABASE SCHEMA:
 {schema_info}
@@ -208,6 +209,8 @@ USER QUERY:
 
 Respond with a natural language answer to the user's question. Be direct, helpful, and informative.
 If you truly cannot answer the question with the information provided, explain what information would be needed.
+Your context is a student management system so keep answers within that scope. 
+If a question is vague or out of scope, be polite in telling them off.
 """
 
     # Get response from Groq

@@ -16,3 +16,4 @@ class AllocationStatus(Enum):
     VACATED = "vacated"
     PENDING = "pending"
     REJECTED = "rejected"
+    ACTIVE = "active"

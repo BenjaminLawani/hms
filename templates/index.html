@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HostelHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            font-family: sans-serif;
+            color: #222;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #222;
+            text-decoration: none;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .btn-outline {
+            border: 1px solid #ddd;
+            color: #333;
+            background: transparent;
+        }
+        
+        .btn-filled {
+            background-color: #222;
+            color: white;
+            border: none;
+        }
+        
+        .btn-outline:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-filled:hover {
+            background-color: #000;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: #222;
+            color: white;
+            border-radius: 30px;
+            font-weight: 500;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background-color: #000;
+            transform: translateY(-2px);
+        }
+        
+        .why-section {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .why-section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+        
+        .feature-card {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 2rem;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+        
+        .feature-card.green {
+            background-color: #a8e6c9;
+        }
+        
+        .feature-card.dark {
+            background-color: #2c2c2c;
+            color: white;
+        }
+        
+        .feature-card.purple {
+            background-color: #d4c4f9;
+        }
+        
+        .feature-card.yellow {
+            background-color: #fff2a8;
+        }
+        
+        .feature-card .card-label {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .feature-card p {
+            font-size: 0.95rem;
+            color: inherit;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature-card {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="#" class="logo">HOSTELHUB</a>
+        <div class="nav-buttons">
+            <a href="/auth/login" class="btn btn-outline">Log In</a>
+            <a href="/auth/get-started" class="btn btn-filled">Sign Up</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Simplify student operations with HostelHub.</h1>
+        <p>Comprehensive student management solution for room allocation, billing, student records, and facility management. Experience the efficiency and precision of modern administration.</p>
+        <a href="/auth/get-started" class="cta-button">Get Started</a>
+    </section>
+
+    <section class="why-section">
+        <h2>Why HostelHub?</h2>
+        <div class="features">
+            <div class="feature-card green">
+                <div class="card-label">WE OFFER</div>
+                <h3>Room Management System</h3>
+                <p>Save time allocating rooms, ensure consistent occupancy tracking, and cater to various student preferences and needs.</p>
+            </div>
+            
+            <div class="feature-card dark">
+                <div class="card-label">WE OFFER</div>
+                <h3>Student Record Management</h3>
+                <p>HostelHub maintains comprehensive student profiles with personal details, emergency contacts, and complete stay history records.</p>
+            </div>
+            
+            <div class="feature-card purple">
+                <div class="card-label">WE OFFER</div>
+                <h3>Real-Time Billing</h3>
+                <p>Reduce administrative workload, provide immediate payment updates to students, and personalize billing experiences.</p>
+            </div>
+            
+            <div class="feature-card yellow">
+                <div class="card-label">WE ARE</div>
+                <h3>Security Focused</h3>
+                <p>Benefit from robust data protection. Our platform ensures you maintain complete control over sensitive student information and hostel operations.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // JavaScript functionality can be added here
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctaButton = document.querySelector('.cta-button');
+            ctaButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Welcome to HostelHub! Create your account to get started.');
+            });
+        });
+    </script>
+</body>
+</html>

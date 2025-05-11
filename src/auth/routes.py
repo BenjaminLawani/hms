@@ -2,8 +2,6 @@ from typing import List, Annotated
 from uuid import UUID
 from sqlalchemy.orm import Session
 from datetime import timedelta
-import string
-import random
 from fastapi import (
     APIRouter,
     HTTPException,
@@ -11,10 +9,11 @@ from fastapi import (
     Depends,
     Request,
     Path,
-    BackgroundTasks
+    Response
 )
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from .models import User
@@ -25,7 +24,7 @@ from .schemas import (
     UserUpdate,
     Token
 )
-# from src.common.services import fm
+templates = Jinja2Templates(directory="templates")
 from src.common.db import get_db
 from src.common.security import (
     create_access_token,
@@ -36,7 +35,7 @@ from src.common.security import (
     generate_random_password,
     send_password_reset_email
 )
-from src.common.config import ACCESS_TOKEN_EXPIRES, EMAIL_CONFIG
+from src.common.config import ACCESS_TOKEN_EXPIRES
 
 limiter = Limiter(key_func=get_remote_address)
 auth_router = APIRouter(
@@ -57,6 +56,7 @@ user_router = APIRouter(
 # @limiter.limit("3/hour")
 def login_user(
     request: Request,
+    response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
@@ -74,7 +74,13 @@ def login_user(
         },
         expires_delta=timedelta(seconds=ACCESS_TOKEN_EXPIRES)
     )
-    return {"access_token": access_token, "token_type":"bearer"}
+    # Set redirect URL in a header or cookie
+    redirect_url = "/dashboard/admin-dashboard" if db_user.is_admin else "/dashboard/student-dashboard"
+    response.headers["X-Redirect-URL"] = redirect_url
+    
+    # Return the token data
+    return {"access_token": access_token, "token_type": "bearer"}
+    
 
 @auth_router.post("/get-started", response_model=UserResponse)
 def get_started(
@@ -267,4 +273,25 @@ def admin_update_user_details(
         email=user.email,
         level=user.level,
         profile_photo_url=user.avatar_url
+    )
+
+@auth_router.get("/login")
+def root(request: Request):
+    return templates.TemplateResponse('login.html', {'request': request})
+
+@auth_router.get("/get-started")
+def root(request: Request):
+    return templates.TemplateResponse('signup.html', {'request': request})
+
+@profile_router.get("/me", response_model=UserResponse)
+def get_current_user_profile(
+    request: Request,
+    current_user: User = Depends(get_current_user)
+):
+    return UserResponse(
+        id=str(current_user.id),
+        name=current_user.name,
+        email=current_user.email,
+        level=current_user.level,
+        profile_photo_url=current_user.avatar_url
     )

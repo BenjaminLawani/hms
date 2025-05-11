@@ -18,7 +18,7 @@ class RoomAllocationService:
         # Check if user already has an active allocation
         existing_allocation = self.db.query(RoomAllocation).filter(
             RoomAllocation.user_id == user_id,
-            RoomAllocation.status == AllocationStatus.ACTIVE
+            RoomAllocation.status == AllocationStatus.ALLOCATED
         ).first()
         
         if existing_allocation:
@@ -45,7 +45,7 @@ class RoomAllocationService:
             user_id=user_id,
             room_id=room_id,
             hall_id=hall.id,
-            status=AllocationStatus.ACTIVE,
+            status=AllocationStatus.ALLOCATED,
             academic_year=academic_year
         )
         
@@ -93,7 +93,7 @@ class RoomAllocationService:
         # Check if any users already have active allocations
         existing_allocations = self.db.query(RoomAllocation).filter(
             RoomAllocation.user_id.in_(user_ids),
-            RoomAllocation.status == AllocationStatus.ACTIVE
+            RoomAllocation.status == AllocationStatus.ALLOCATED
         ).all()
         
         if existing_allocations:
@@ -111,7 +111,7 @@ class RoomAllocationService:
                 user_id=user_id,
                 room_id=current_room.id,
                 hall_id=hall_id,
-                status=AllocationStatus.ACTIVE,
+                status=AllocationStatus.ALLOCATED,
                 academic_year=academic_year
             )
             
@@ -142,7 +142,7 @@ class RoomAllocationService:
         if not allocation:
             raise ValueError(f"Allocation with ID {allocation_id} not found")
             
-        if allocation.status != AllocationStatus.ACTIVE:
+        if allocation.status != AllocationStatus.ALLOCATED:
             raise ValueError(f"Allocation is not active (current status: {allocation.status})")
         
         # Update allocation
@@ -168,7 +168,7 @@ class RoomAllocationService:
         """Get a user's current active allocation"""
         allocation = self.db.query(RoomAllocation).filter(
             RoomAllocation.user_id == user_id,
-            RoomAllocation.status == AllocationStatus.ACTIVE
+            RoomAllocation.status == AllocationStatus.ALLOCATED
         ).first()
         
         return allocation
@@ -254,7 +254,7 @@ class RoomAllocationService:
         # Count allocations by status
         active_allocations = self.db.query(RoomAllocation).filter(
             RoomAllocation.hall_id == hall_id,
-            RoomAllocation.status == AllocationStatus.ACTIVE
+            RoomAllocation.status == AllocationStatus.ALLOCATED
         ).count()
         
         pending_allocations = self.db.query(RoomAllocation).filter(
@@ -343,7 +343,7 @@ class RoomAllocationService:
         # Check if there are active allocations
         active_allocations = self.db.query(RoomAllocation).filter(
             RoomAllocation.hall_id == hall_id,
-            RoomAllocation.status == AllocationStatus.ACTIVE
+            RoomAllocation.status == AllocationStatus.ALLOCATED
         ).first()
         
         if active_allocations:
@@ -437,7 +437,7 @@ class RoomAllocationService:
         # Check if there are active allocations for this room
         active_allocations = self.db.query(RoomAllocation).filter(
             RoomAllocation.room_id == room_id,
-            RoomAllocation.status == AllocationStatus.ACTIVE
+            RoomAllocation.status == AllocationStatus.ALLOCATED
         ).first()
         
         if active_allocations:
