@@ -6,6 +6,7 @@ This is a Student Management System (HMS) project built with Python. It provides
 
 - Python 3.10 or higher
 - [pip](https://pip.pypa.io/en/stable/)
+- Postgres/ pgAdmin
 
 ## Setup Instructions
 
@@ -36,7 +37,7 @@ This is a Student Management System (HMS) project built with Python. It provides
 4. **Run the application**
 
    ```bash
-   python main.py
+   uvicorn main:app --reload --port 8000
    ```
 
 5. **Access the application**

@@ -167,89 +167,86 @@
 
     <script>
         document.getElementById('signupForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Hide any previous messages
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            
-            // Log action for debugging
-            console.log('Form submitted, preparing to send data');
-            
-            // Get form data
-            const formData = {
-                first_name: document.getElementById('first-name').value,
-                last_name: document.getElementById('last-name').value,
-                level: parseInt(document.getElementById('level').value), // Convert to integer
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
-            };
-            
-            // Log data being sent (remove this in production)
-            console.log('Sending data:', formData);
-            
-            // Submit to API
-            fetch('/auth/get-started', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                
-                // For 422 errors, we want to see the validation errors
-                return response.json().then(data => {
-                    if (!response.ok) {
-                        console.log('Error response data:', data);
-                        // For 422, FastAPI returns validation errors in a specific format
-                        if (response.status === 422 && data.detail) {
-                            // Handle validation errors from FastAPI
-                            let errorMsg = "Validation error(s): ";
-                            if (Array.isArray(data.detail)) {
-                                // Multiple validation errors
-                                data.detail.forEach(err => {
-                                    errorMsg += `${err.loc.slice(-1)[0]}: ${err.msg}; `;
-                                });
-                            } else {
-                                // Single error message
-                                errorMsg += data.detail;
-                            }
-                            throw new Error(errorMsg);
-                        }
-                        throw new Error(data.detail || 'Failed to create account');
+    e.preventDefault();
+    
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    
+    // Hide any previous messages
+    errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+    
+    // Log action for debugging
+    console.log('Form submitted, preparing to send data');
+    
+    // Get form data
+    const formData = {
+        first_name: document.getElementById('first-name').value,
+        last_name: document.getElementById('last-name').value,
+        level: document.getElementById('level').value, // Send as string, not parseInt
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        profile_photo_url: "", // Default empty string for profile photo
+        created_at: new Date().toISOString() // Current timestamp in ISO format
+    };
+    
+    // Log data being sent (remove this in production)
+    console.log('Sending data:', formData);
+    
+    // Submit to API
+    fetch('/auth/get-started', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        
+        return response.json().then(data => {
+            if (!response.ok) {
+                console.log('Error response data:', data);
+                // For 422, FastAPI returns validation errors in a specific format
+                if (response.status === 422 && data.detail) {
+                    // Handle validation errors from FastAPI
+                    let errorMsg = "Validation error(s): ";
+                    if (Array.isArray(data.detail)) {
+                        // Multiple validation errors
+                        data.detail.forEach(err => {
+                            errorMsg += `${err.loc.slice(-1)[0]}: ${err.msg}; `;
+                        });
+                    } else {
+                        // Single error message
+                        errorMsg += data.detail;
                     }
-                    return data;
-                });
-            })
-            .then(data => {
-                // Success - log and show message
-                console.log('Success:', data);
-                successMessage.style.display = 'block';
-                
-                // Reset form
-                document.getElementById('signupForm').reset();
-                
-                // Redirect to login page after a delay
-                setTimeout(() => {
-                    window.location.href = '/auth/login';
-                }, 2000);
-            })
-            .catch(error => {
-                // Log the full error for debugging
-                console.error('Error:', error);
-                errorMessage.textContent = error.message;
-                errorMessage.style.display = 'block';
-            });
-        // });catch(error => {
-        //         errorMessage.textContent = error.message;
-        //         errorMessage.style.display = 'block';
-        //     });
+                    throw new Error(errorMsg);
+                }
+                throw new Error(data.detail || 'Failed to create account');
+            }
+            return data;
         });
+    })
+    .then(data => {
+        // Success - log and show message
+        console.log('Success:', data);
+        successMessage.style.display = 'block';
+        
+        // Reset form
+        document.getElementById('signupForm').reset();
+        
+        // Redirect to login page after a delay
+        setTimeout(() => {
+            window.location.href = '/auth/login';
+        }, 2000);
+    })
+    .catch(error => {
+        // Log the full error for debugging
+        console.error('Error:', error);
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = 'block';
+    });
+});
     </script>
 </body>
 </html>

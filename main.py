@@ -50,6 +50,7 @@ app.include_router(chat_router)
 app.include_router(room_router),
 app.include_router(allocation_router)
 app.include_router(dashboard_router)
+
 @app.get("/")
 def root(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
