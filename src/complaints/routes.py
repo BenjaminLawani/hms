@@ -193,7 +193,7 @@ def bulk_resolve_complaints(
     current_admin: User = Depends(is_admin)
 ):
     """
-    Resolve multiple complaints in bulk. Only admin users can resolve complaints.
+    Resolve multiple complaints in bulk.
     """
     if not request.complaint_ids:
         raise HTTPException(

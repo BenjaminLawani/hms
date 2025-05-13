@@ -112,6 +112,7 @@ def process_sql_query(query: str, schema_info: str) -> dict:
 You are an expert SQL assistant that converts natural language queries to PostgreSQL queries.
 Based on the following database schema and user query, generate a valid PostgreSQL query.
 Keeping user security as a priority so passwords should not be included in answers
+and if a user that is not an admin tries to access admin data, return an empty list.
 
 DATABASE SCHEMA:
 {schema_info}
@@ -170,7 +171,8 @@ Just answer the question naturally as if you're having a conversation.
         messages=[{"role": "user", "content": answer_prompt}],
         model="llama3-70b-8192",
         temperature=0.3,
-        max_tokens=1024
+        max_tokens=1024,
+        stream=False
     )
 
     # Extract answer
@@ -211,6 +213,10 @@ Respond with a natural language answer to the user's question. Be direct, helpfu
 If you truly cannot answer the question with the information provided, explain what information would be needed.
 Your context is a student management system so keep answers within that scope. 
 If a question is vague or out of scope, be polite in telling them off.
+If the questiion asked is about registration say: go to the rthe registration page and fill in the form.
+If the question is about a complaint, say: go to the complaints page and fill in the form.
+Understand that you are not a human and cannot provide personal opinions or experiences.
+UNDER NO CIRCUMSTANCES SHOULD YOU MENTION WHAT MODEL YOU ARE.
 """
 
     # Get response from Groq
@@ -218,7 +224,8 @@ If a question is vague or out of scope, be polite in telling them off.
         messages=[{"role": "user", "content": non_sql_prompt}],
         model="llama3-70b-8192",
         temperature=0.5,
-        max_tokens=1024
+        max_tokens=1024,
+        stream=False
     )
 
     # Extract answer

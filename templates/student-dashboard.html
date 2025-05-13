@@ -610,10 +610,10 @@ select {
                     <div class="form-group">
                         <label for="complaintCategory">Category:</label>
                         <select id="complaintCategory" name="category" required>
-                            <option value="GENERAL">General</option>
-                            <option value="PLUMBING">Plumbing</option>
-                            <option value="ELECTRICAL">Electrical</option>
-                            <option value="FURNITURE">Furniture</option>
+                            <option value="general">General</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="furniture">Furniture</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1031,31 +1031,37 @@ select {
         }
         
         // Submit complaint
-        async function submitComplaint(event) {
-            event.preventDefault();
-            
-            const complaintData = {
-                title: document.getElementById('complaintTitle').value.trim(),
-                category: document.getElementById('complaintCategory').value,
-                content: document.getElementById('complaintContent').value.trim(),
-
-            };
-
-            if (!complaintData.title || !complaintData.content) {
-                alert('Please fill in both title and description for the complaint.');
-                return;
-            }
-            
-            try {
-                const response = await apiRequest('/complaint/create-complaint', 'POST', complaintData);
-                alert('Complaint submitted successfully!');
-                document.getElementById('complaintForm').reset();
-                
-            } catch (error) {
-                console.error('Failed to submit complaint:', error);
-                alert('Failed to submit complaint: ' + error.message);
-            }
-        }
+async function submitComplaint(event) {
+    event.preventDefault();
+    
+    // Get form values
+    const title = document.getElementById('complaintTitle').value.trim();
+    const category = document.getElementById('complaintCategory').value;
+    const content = document.getElementById('complaintContent').value.trim();
+    
+    // Validate input
+    if (!title || !content) {
+        alert('Please fill in both title and description for the complaint.');
+        return;
+    }
+    
+    // Prepare data for submission
+    // Note: Make sure category is a valid enum value from ComplainCategory
+    const complaintData = {
+        title: title,
+        content: content,
+        category: category || null // Send null if empty to match the Optional type
+    };
+    
+    try {
+        const response = await apiRequest('/complaint/create-complaint', 'POST', complaintData);
+        alert('Complaint submitted successfully!');
+        document.getElementById('complaintForm').reset();
+    } catch (error) {
+        console.error('Failed to submit complaint:', error);
+        alert('Failed to submit complaint: ' + error.message);
+    }
+}
         
         // Send chat query
         async function sendChatQuery(event) {

@@ -695,10 +695,13 @@
                         <label for="query-input">Ask a Question:</label>
                         <textarea id="query-input" rows="4" required></textarea> <!-- Increased rows -->
                     </div>
+                     <!-- Context input, if needed in the future or as an example for more complex queries -->
+                    <!-- 
                     <div class="form-group">
-                        <label for="context-input">Additional Context (optional):</label>
-                        <textarea id="context-input" rows="3"></textarea> <!-- Increased rows -->
+                        <label for="context-input">Context (Optional):</label>
+                        <textarea id="context-input" rows="2"></textarea>
                     </div>
+                    -->
                     <button type="submit">Submit Query</button>
                 </form>
             </div>
@@ -833,7 +836,8 @@
             alert("You have been logged out.");
             displayUserInfo(null); // Update user info display
             showSection('dashboard-section'); // Or a dedicated logged-out view
-            // Potentially disable or hide parts of the UI that require login
+            // Redirect to login, assuming /auth/login is the login page path
+            window.location.href = '/auth/login'; 
         }
 
         // UI utility functions
@@ -1219,7 +1223,7 @@
         async function submitChatQuery(event) {
             event.preventDefault();
             const query = document.getElementById('query-input').value;
-            const context = document.getElementById('context-input').value;
+            // const context = document.getElementById('context-input').value; // If context input is used
             const chatAnswerDiv = document.getElementById('chat-answer');
             const chatDataDiv = document.getElementById('chat-data');
 
@@ -1228,8 +1232,8 @@
 
             try {
                 const response = await fetchData(`${API_BASE_URL}/chat/query`, 'POST', {
-                    query: query,
-                    context: context || null
+                    query: query
+                    // context: context || null // If context input is used
                 });
 
                 chatAnswerDiv.innerHTML = `<p>${response.answer || "No answer received."}</p>`;
@@ -1239,7 +1243,7 @@
                         <h4>Supporting Data:</h4>
                         <pre>${JSON.stringify(response.data, null, 2)}</pre>
                     `;
-                } else if (response.data) {
+                } else if (response.data) { // Catches cases where response.data might be an empty object or array not caught by .length
                      chatDataDiv.innerHTML = `<h4>Supporting Data:</h4><p><em>No specific data entities were directly used for this answer.</em></p>`;
                 }
             } catch (error) {
@@ -1371,20 +1375,9 @@
 
         async function toggleHallAllocation(hallId, isOpen) {
             const action = isOpen ? 'open' : 'close';
-            // Academic year might be tied to the hall, or you might need to prompt if it changes contextually
-            // For simplicity, assuming the hall's current academic year is used or backend handles it.
-            // If a specific academic year is needed for this action, prompt the user:
-            // const academicYear = prompt(`Enter academic year to ${action} allocation for:`, new Date().getFullYear().toString());
-            // if (!academicYear) return; // User cancelled
-
             if (confirm(`Are you sure you want to ${action} allocation for this hall?`)) {
                 try {
-                     // The API endpoint in the original HTML has academic_year as a query param.
-                     // Let's assume we use the hall's existing academic year or one must be provided.
-                     // For this example, I'll modify it to be a bit more robust or prompt if needed.
-                     // For now, I'll remove the prompt and assume the backend handles the academic year contextually
-                     // or uses the hall's current one. If a specific year is ALWAYS needed, a prompt is better.
-                    await fetchData(`${API_BASE_URL}/halls/${hallId}/allocation-status?is_open=${isOpen}`, 'PUT'); // Removed academic_year for simplicity, adjust if API requires it
+                    await fetchData(`${API_BASE_URL}/halls/${hallId}/allocation-status?is_open=${isOpen}`, 'PUT');
                     alert(`Hall allocation status successfully updated to ${action}.`);
                     loadHalls(); // Refresh hall list to show new status
                 } catch (error) {
@@ -1458,7 +1451,6 @@
                 const options = {
                     method: method,
                     headers: {
-                        // 'Authorization': `Bearer ${token}`, // Uncomment if token is managed and always available
                         'Content-Type': 'application/json'
                     }
                 };
