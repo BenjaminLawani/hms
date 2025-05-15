@@ -36,6 +36,7 @@ from src.common.security import (
     send_password_reset_email
 )
 from src.common.config import ACCESS_TOKEN_EXPIRES
+from src.common.handlers import AccountDeletionHandler  # Import the handler
 
 limiter = Limiter(key_func=get_remote_address)
 auth_router = APIRouter(
@@ -150,11 +151,19 @@ def delete_account(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ) -> dict:
-    
+    # First, handle room allocations
     try:
+        # handler = AccountDeletionHandler(db)
+        # allocation_result = handler.handle_user_deletion(str(current_user.id))
+        
+        # Then proceed with account deletion
         db.delete(current_user)
         db.commit()
-        return {"message": "Account deleted successfully"}
+        
+        return {
+            "message": "Account deleted successfully"
+            # "allocations_handled": allocation_result
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(
@@ -229,9 +238,26 @@ def delete_user_by_id(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    db.delete(user)
-    db.commit()
-    return {"message": f"User with id: {user_id} deleted"}
+    
+    try:
+        # First, handle room allocations
+        handler = AccountDeletionHandler(db)
+        allocation_result = handler.handle_user_deletion(str(user_id))
+        
+        # Then proceed with account deletion
+        db.delete(user)
+        db.commit()
+        
+        return {
+            "message": f"User with id: {user_id} deleted successfully",
+            "allocations_handled": allocation_result
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"User deletion failed: {str(e)}"
+        )
 
 @user_router.put("/{user_id}", response_model=UserResponse)
 def admin_update_user_details(

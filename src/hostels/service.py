@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_
-import uuid
+from uuid import UUID
 
 from .models import Hall, Room, RoomAllocation
 from .schemas import HallOccupancyStats, RoomAllocationResponse
@@ -13,7 +13,7 @@ class RoomAllocationService:
     def __init__(self, db: Session):
         self.db = db
 
-    def allocate_room(self, user_id: str, room_id: int, academic_year: str) -> RoomAllocationResponse:
+    def allocate_room(self, user_id: UUID, room_id: int, academic_year: str) -> RoomAllocationResponse:
         """Allocate a user to a room"""
         # Check if user already has an active allocation
         existing_allocation = self.db.query(RoomAllocation).filter(
@@ -64,7 +64,7 @@ class RoomAllocationService:
         
         return allocation
 
-    def bulk_allocate_rooms(self, user_ids: List[str], hall_id: str, academic_year: str) -> List[RoomAllocationResponse]:
+    def bulk_allocate_rooms(self, user_ids: List[UUID], hall_id: str, academic_year: str) -> List[RoomAllocationResponse]:
         """Bulk allocate users to rooms in a hall"""
         # Check hall exists and is open for allocation
         hall = self.db.query(Hall).filter(Hall.id == hall_id).first()
@@ -164,7 +164,7 @@ class RoomAllocationService:
         
         return allocation
 
-    def get_user_allocation(self, user_id: str) -> Optional[RoomAllocationResponse]:
+    def get_user_allocation(self, user_id: UUID) -> Optional[RoomAllocationResponse]:
         """Get a user's current active allocation"""
         allocation = self.db.query(RoomAllocation).filter(
             RoomAllocation.user_id == user_id,

@@ -15,15 +15,11 @@ from sqlalchemy.dialects.postgresql import UUID
 from src.common.enums import AllocationStatus
 from src.common.db import Base, engine
 
-# Add to your existing models.py file
-
-
-
 # Using the existing User model instead of creating a separate Student model
 class RoomAllocation(Base):
     __tablename__ = "room_allocations"
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
-    user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
+    user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True, unique=True)
     room_id = Column(ForeignKey("rooms.id", ondelete="CASCADE"), nullable=False)
     hall_id = Column(ForeignKey("halls.id", ondelete="CASCADE"), nullable=False)
     status = Column(Enum(AllocationStatus), nullable=False, default=AllocationStatus.PENDING)

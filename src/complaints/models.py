@@ -25,7 +25,7 @@ class Complaint(Base):
     title = Column(String(64), nullable=False)
     content = Column(String(128), nullable=True)
     category = Column(ENUM(ComplainCategory), default=ComplainCategory.GENERAL)
-    status = Column(ENUM(Status), default=Status.OPENED)
+    status = Column(ENUM(Status), default=Status.PENDING)
     # no_of_complaints = Column(Integer())
 
 class ComplaintUser(Base):

@@ -1,1500 +1,1523 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
 </head>
 <body>
-    <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
+<style>
+*, *::before, *::after {
+box-sizing: border-box;
+}/* Base Styles */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa; /* Softer background */
+        color: #212529; /* Darker base text color */
+        line-height: 1.6;
+    }
 
-        /* Base Styles */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa; /* Softer background */
-            color: #212529; /* Darker base text color */
-            line-height: 1.6;
-        }
+    /* Layout */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px; /* Adjusted padding */
+        background-color: white;
+        border-bottom: 1px solid #dee2e6;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Softer shadow */
+        position: sticky; /* Keep header visible on scroll */
+        top: 0;
+        z-index: 1000;
+    }
 
-        /* Layout */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px; /* Adjusted padding */
-            background-color: white;
-            border-bottom: 1px solid #dee2e6;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Softer shadow */
-            position: sticky; /* Keep header visible on scroll */
-            top: 0;
-            z-index: 1000;
-        }
+    nav {
+        width: 230px; /* Slightly wider */
+        background-color: white;
+        border-right: 1px solid #dee2e6;
+        height: calc(100vh - 71px); /* Adjusted for header height */
+        position: fixed;
+        top: 71px; /* Adjusted for header height */
+        padding-top: 20px; /* Space at the top of nav */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Subtle shadow for nav */
+    }
 
+    main {
+        margin-left: 230px; /* Adjusted for nav width */
+        padding: 30px; /* Increased padding */
+    }
+
+    /* Typography */
+    h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    h2 {
+        font-size: 22px; /* Slightly smaller */
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: #343a40;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e6ed;
+    }
+
+    h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #495057;
+    }
+
+    h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #495057;
+    }
+
+    p {
+        color: #6c757d; /* Softer paragraph text */
+        margin: 0 0 10px 0; /* Consistent bottom margin */
+        font-size: 14px;
+    }
+
+    /* Navigation */
+    nav ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    nav li {
+        margin: 0;
+    }
+
+    .nav-btn {
+        display: block;
+        width: 100%;
+        padding: 14px 25px; /* Increased padding */
+        text-align: left;
+        background-color: transparent;
+        border: none;
+        border-left: 4px solid transparent; /* For active state alignment */
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #495057; /* Slightly darker nav text */
+        transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+    }
+
+    .nav-btn:hover {
+        background-color: #e9ecef; /* Lighter hover */
+        color: #007bff; /* Accent color on hover */
+        border-left-color: #007bff;
+    }
+
+    .nav-btn.active {
+        background-color: #e9f5ff; /* Light blue background for active */
+        color: #007bff; /* Accent color for active */
+        font-weight: 600; /* Bolder text for active */
+        border-left: 4px solid #007bff; /* Prominent active indicator */
+    }
+
+    /* Sections */
+    .section {
+        display: none;
+        background-color: white; /* Sections on white background */
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07); /* Consistent shadow for sections */
+        margin-bottom: 30px;
+    }
+    .section.active {
+        display: block;
+    }
+    /* Remove section-specific margin if it's the last one */
+    .section:last-of-type {
+        margin-bottom: 0;
+    }
+
+
+    /* Dashboard stats & Card-like elements */
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-stats > div, .hall-item, #chat-response-container {
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 8px; /* Consistent border radius */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Softer, more consistent shadow */
+        border: 1px solid #e0e6ed;
+    }
+    .dashboard-stats > div h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #007bff;
+    }
+    .dashboard-stats > div p {
+        font-size: 16px;
+        color: #343a40;
+        margin-bottom: 5px;
+    }
+    .dashboard-stats > div p:last-child {
+        margin-bottom: 0;
+    }
+
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        font-size: 14px;
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px; /* Rounded corners for table container */
+        overflow: hidden; /* To make border-radius work with th */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    th {
+        background-color: #f8f9fa; /* Light gray for header */
+        font-weight: 600; /* Bolder header text */
+        color: #495057;
+        text-transform: uppercase; /* Uppercase headers */
+        font-size: 12px; /* Smaller font for headers */
+    }
+    
+    tbody tr:nth-child(even) {
+        background-color: #f8f9fa; /* Zebra striping */
+    }
+
+    tbody tr:hover {
+        background-color: #e9ecef; /* Hover effect for rows */
+    }
+    td button {
+        margin-right: 5px;
+    }
+
+    /* Forms */
+    form {
+        max-width: 700px; /* Slightly wider forms */
+    }
+
+    .form-group { /* Use this class instead of form > div */
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #495057;
+        font-weight: 600; /* Bolder labels */
+        font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"], /* Added for potential future use */
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px 16px; /* Increased padding */
+        border: 1px solid #ced4da; /* Softer border */
+        border-radius: 6px; /* More rounded */
+        font-size: 14px;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #80bdff; /* Lighter blue for focus border */
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Bootstrap-like focus */
+    }
+
+    input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    /* Buttons */
+    button, .btn { /* Added .btn for more generic button styling */
+        padding: 10px 20px; /* Adjusted padding */
+        background-color: #007bff; /* Primary blue */
+        color: white;
+        border: 1px solid #007bff;
+        border-radius: 6px; /* More rounded */
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        text-decoration: none; /* For .btn used as <a> */
+        display: inline-block; /* For .btn used as <a> */
+        line-height: 1.5;
+    }
+
+    button:hover, .btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        border-color: #0056b3;
+    }
+    
+    /* Submit button in forms may not need extra margin if .form-group handles it */
+    /* button[type="submit"] {
+        margin-top: 10px; 
+    } */
+
+    /* Secondary / Action Buttons */
+    .btn-secondary,
+    #logout-btn,
+    #create-hall-btn,
+    #create-room-btn,
+    #load-rooms-btn,
+    #filter-allocations-btn,
+    #bulk-resolve-btn {
+        background-color: #6c757d; /* Gray for secondary actions */
+        border-color: #6c757d;
+        color: white;
+    }
+    .btn-secondary:hover,
+    #logout-btn:hover,
+    #create-hall-btn:hover,
+    #create-room-btn:hover,
+    #load-rooms-btn:hover,
+    #filter-allocations-btn:hover,
+    #bulk-resolve-btn:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+    /* Table action buttons - more subtle */
+    table button {
+        padding: 6px 12px;
+        font-size: 13px;
+        background-color: #f8f9fa;
+        color: #007bff;
+        border: 1px solid #007bff;
+    }
+    table button:hover {
+        background-color: #007bff;
+        color: white;
+    }
+    /* Specific styling for delete/destructive buttons if needed */
+    .btn-danger, table button[onclick*="delete"] /* Basic targeting for delete */ {
+        background-color: #f8f9fa;
+        color: #dc3545; /* Red for danger */
+        border: 1px solid #dc3545;
+    }
+    .btn-danger:hover, table button[onclick*="delete"]:hover {
+        background-color: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+
+
+    /* User info */
+    #user-info {
+        text-align: right;
+        margin-right: 20px; /* Space between user info and logout */
+    }
+
+    #user-info p {
+        margin: 0;
+        line-height: 1.4;
+        font-size: 14px;
+        color: #495057;
+    }
+    #user-info p:first-child {
+        font-weight: 500;
+    }
+
+    /* Hall items */
+    .hall-item {
+        margin-bottom: 20px;
+    }
+    .hall-item h4 {
+        margin-top: 0;
+        color: #007bff; /* Accent color for hall names */
+    }
+    .hall-item > div { /* Button container */
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap; /* Allow buttons to wrap */
+    }
+    .hall-item > div button { /* Buttons inside hall item */
+        flex-grow: 1; /* Make buttons fill space if few */
+        min-width: 120px; /* Minimum width for buttons */
+    }
+
+
+    /* Filters */
+    #allocation-filters, #hall-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Increased gap */
+        margin-bottom: 25px;
+        align-items: flex-end; /* Align items to bottom */
+        padding: 20px;
+        background-color: #f8f9fa; /* Light background for filter area */
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+    }
+
+    #allocation-filters > div, #hall-selector > div {
+        flex: 1;
+        min-width: 200px;
+    }
+    #hall-selector label, #allocation-filters label { /* Ensure labels are above inputs */
+        margin-bottom: 5px;
+    }
+
+    /* Create Form Toggles (display:none by default in HTML) */
+    #create-hall-form, #create-room-form {
+        padding: 20px;
+        margin-top: 20px;
+        border: 1px solid #e0e6ed;
+        border-radius: 8px;
+        background-color: #fdfdff; /* Slightly off-white for forms */
+    }
+
+
+    /* Chat section */
+    #chat-query-container {
+        margin-bottom: 25px;
+    }
+    #chat-response-container {
+        margin-top: 20px;
+        min-height: 100px; /* Ensure it has some height */
+    }
+
+    #chat-answer {
+        margin-bottom: 20px;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    #chat-answer p:last-child {
+        margin-bottom: 0;
+    }
+
+    #chat-data h4 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #343a40;
+    }
+    #chat-data pre {
+        background-color: #e9ecef; /* Lighter background for code */
+        padding: 15px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font-size: 13px;
+        border: 1px solid #dee2e6;
+        color: #212529;
+    }
+
+    /* Bulk actions */
+    #bulk-resolve-container {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) { /* Adjust breakpoint for nav */
         nav {
-            width: 230px; /* Slightly wider */
-            background-color: white;
-            border-right: 1px solid #dee2e6;
-            height: calc(100vh - 71px); /* Adjusted for header height */
-            position: fixed;
-            top: 71px; /* Adjusted for header height */
-            padding-top: 20px; /* Space at the top of nav */
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Subtle shadow for nav */
-        }
-
-        main {
-            margin-left: 230px; /* Adjusted for nav width */
-            padding: 30px; /* Increased padding */
-        }
-
-        /* Typography */
-        h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-            color: #343a40;
-        }
-
-        h2 {
-            font-size: 22px; /* Slightly smaller */
-            font-weight: 600;
-            margin-top: 0;
-            margin-bottom: 25px;
-            color: #343a40;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e6ed;
-        }
-
-        h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #495057;
-        }
-
-        h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #495057;
-        }
-
-        p {
-            color: #6c757d; /* Softer paragraph text */
-            margin: 0 0 10px 0; /* Consistent bottom margin */
-            font-size: 14px;
-        }
-
-        /* Navigation */
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        nav li {
-            margin: 0;
-        }
-
-        .nav-btn {
-            display: block;
             width: 100%;
-            padding: 14px 25px; /* Increased padding */
-            text-align: left;
-            background-color: transparent;
-            border: none;
-            border-left: 4px solid transparent; /* For active state alignment */
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #495057; /* Slightly darker nav text */
-            transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
-        }
-
-        .nav-btn:hover {
-            background-color: #e9ecef; /* Lighter hover */
-            color: #007bff; /* Accent color on hover */
-            border-left-color: #007bff;
-        }
-
-        .nav-btn.active {
-            background-color: #e9f5ff; /* Light blue background for active */
-            color: #007bff; /* Accent color for active */
-            font-weight: 600; /* Bolder text for active */
-            border-left: 4px solid #007bff; /* Prominent active indicator */
-        }
-
-        /* Sections */
-        .section {
-            display: none;
-            background-color: white; /* Sections on white background */
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07); /* Consistent shadow for sections */
-            margin-bottom: 30px;
-        }
-        .section.active {
-            display: block;
-        }
-        /* Remove section-specific margin if it's the last one */
-        .section:last-of-type {
-            margin-bottom: 0;
-        }
-
-
-        /* Dashboard stats & Card-like elements */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .dashboard-stats > div, .hall-item, #chat-response-container {
-            background-color: #ffffff;
-            padding: 25px;
-            border-radius: 8px; /* Consistent border radius */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Softer, more consistent shadow */
-            border: 1px solid #e0e6ed;
-        }
-        .dashboard-stats > div h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #007bff;
-        }
-        .dashboard-stats > div p {
-            font-size: 16px;
-            color: #343a40;
-            margin-bottom: 5px;
-        }
-        .dashboard-stats > div p:last-child {
-            margin-bottom: 0;
-        }
-
-
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-            font-size: 14px;
-            background-color: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px; /* Rounded corners for table container */
-            overflow: hidden; /* To make border-radius work with th */
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
+            height: auto;
+            position: static; /* Change to static for small screens */
+            border-right: none;
             border-bottom: 1px solid #dee2e6;
+            padding-top: 0;
+            box-shadow: none;
         }
-
-        th {
-            background-color: #f8f9fa; /* Light gray for header */
-            font-weight: 600; /* Bolder header text */
-            color: #495057;
-            text-transform: uppercase; /* Uppercase headers */
-            font-size: 12px; /* Smaller font for headers */
-        }
-        
-        tbody tr:nth-child(even) {
-            background-color: #f8f9fa; /* Zebra striping */
-        }
-
-        tbody tr:hover {
-            background-color: #e9ecef; /* Hover effect for rows */
-        }
-        td button {
-            margin-right: 5px;
-        }
-
-        /* Forms */
-        form {
-            max-width: 700px; /* Slightly wider forms */
-        }
-
-        .form-group { /* Use this class instead of form > div */
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #495057;
-            font-weight: 600; /* Bolder labels */
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="number"],
-        input[type="password"], /* Added for potential future use */
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 16px; /* Increased padding */
-            border: 1px solid #ced4da; /* Softer border */
-            border-radius: 6px; /* More rounded */
-            font-size: 14px;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #80bdff; /* Lighter blue for focus border */
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Bootstrap-like focus */
-        }
-
-        input[type="checkbox"] {
-            width: auto;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        /* Buttons */
-        button, .btn { /* Added .btn for more generic button styling */
-            padding: 10px 20px; /* Adjusted padding */
-            background-color: #007bff; /* Primary blue */
-            color: white;
-            border: 1px solid #007bff;
-            border-radius: 6px; /* More rounded */
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-            text-decoration: none; /* For .btn used as <a> */
-            display: inline-block; /* For .btn used as <a> */
-            line-height: 1.5;
-        }
-
-        button:hover, .btn:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-            border-color: #0056b3;
-        }
-        
-        /* Submit button in forms may not need extra margin if .form-group handles it */
-        /* button[type="submit"] {
-            margin-top: 10px; 
-        } */
-
-        /* Secondary / Action Buttons */
-        .btn-secondary,
-        #logout-btn,
-        #create-hall-btn,
-        #create-room-btn,
-        #load-rooms-btn,
-        #filter-allocations-btn,
-        #bulk-resolve-btn {
-            background-color: #6c757d; /* Gray for secondary actions */
-            border-color: #6c757d;
-            color: white;
-        }
-        .btn-secondary:hover,
-        #logout-btn:hover,
-        #create-hall-btn:hover,
-        #create-room-btn:hover,
-        #load-rooms-btn:hover,
-        #filter-allocations-btn:hover,
-        #bulk-resolve-btn:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
-        }
-
-        /* Table action buttons - more subtle */
-        table button {
-            padding: 6px 12px;
-            font-size: 13px;
-            background-color: #f8f9fa;
-            color: #007bff;
-            border: 1px solid #007bff;
-        }
-        table button:hover {
-            background-color: #007bff;
-            color: white;
-        }
-        /* Specific styling for delete/destructive buttons if needed */
-        .btn-danger, table button[onclick*="delete"] /* Basic targeting for delete */ {
-            background-color: #f8f9fa;
-            color: #dc3545; /* Red for danger */
-            border: 1px solid #dc3545;
-        }
-        .btn-danger:hover, table button[onclick*="delete"]:hover {
-            background-color: #dc3545;
-            color: white;
-            border-color: #dc3545;
-        }
-
-
-        /* User info */
-        #user-info {
-            text-align: right;
-            margin-right: 20px; /* Space between user info and logout */
-        }
-
-        #user-info p {
-            margin: 0;
-            line-height: 1.4;
-            font-size: 14px;
-            color: #495057;
-        }
-        #user-info p:first-child {
-            font-weight: 500;
-        }
-
-        /* Hall items */
-        .hall-item {
-            margin-bottom: 20px;
-        }
-        .hall-item h4 {
-            margin-top: 0;
-            color: #007bff; /* Accent color for hall names */
-        }
-        .hall-item > div { /* Button container */
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap; /* Allow buttons to wrap */
-        }
-        .hall-item > div button { /* Buttons inside hall item */
-            flex-grow: 1; /* Make buttons fill space if few */
-            min-width: 120px; /* Minimum width for buttons */
-        }
-
-
-        /* Filters */
-        #allocation-filters, #hall-selector {
-            display: flex;
+        nav ul {
+            display: flex; /* Horizontal scroll or wrap */
             flex-wrap: wrap;
-            gap: 20px; /* Increased gap */
-            margin-bottom: 25px;
-            align-items: flex-end; /* Align items to bottom */
+            justify-content: center;
+        }
+        nav li {
+            flex-grow: 1; /* Allow items to grow */
+        }
+        .nav-btn {
+            text-align: center;
+            border-left: none;
+            border-bottom: 4px solid transparent; /* Use bottom border for active state */
+            padding: 12px 15px;
+        }
+        .nav-btn:hover {
+            border-left-color: transparent; /* Override desktop hover */
+            border-bottom-color: #007bff;
+        }
+        .nav-btn.active {
+            border-left: none; /* Override desktop active */
+            border-bottom: 4px solid #007bff;
+        }
+        main {
+            margin-left: 0;
             padding: 20px;
-            background-color: #f8f9fa; /* Light background for filter area */
-            border-radius: 8px;
-            border: 1px solid #e0e6ed;
+        }
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px;
+        }
+        
+        #user-info {
+            margin: 10px 0;
+            text-align: left;
+        }
+        
+        #logout-btn {
+            margin-top: 10px;
+            width: 100%; /* Full width logout on small screens */
+        }
+        
+        .dashboard-stats {
+            grid-template-columns: 1fr; /* Stack stats cards */
         }
 
+        #allocation-filters, #hall-selector {
+            flex-direction: column; /* Stack filter items */
+            gap: 15px;
+        }
         #allocation-filters > div, #hall-selector > div {
-            flex: 1;
-            min-width: 200px;
+            width: 100%; /* Full width filter inputs */
         }
-        #hall-selector label, #allocation-filters label { /* Ensure labels are above inputs */
-            margin-bottom: 5px;
-        }
-
-        /* Create Form Toggles (display:none by default in HTML) */
-        #create-hall-form, #create-room-form {
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid #e0e6ed;
-            border-radius: 8px;
-            background-color: #fdfdff; /* Slightly off-white for forms */
+        #allocation-filters button, #hall-selector button {
+            width: 100%; /* Full width filter button */
         }
 
-
-        /* Chat section */
-        #chat-query-container {
-            margin-bottom: 25px;
+        .hall-item > div {
+            flex-direction: column; /* Stack buttons in hall item */
         }
-        #chat-response-container {
-            margin-top: 20px;
-            min-height: 100px; /* Ensure it has some height */
+        .hall-item > div button {
+            width: 100%;
         }
 
-        #chat-answer {
-            margin-bottom: 20px;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-        #chat-answer p:last-child {
-            margin-bottom: 0;
-        }
-
-        #chat-data h4 {
-            margin-top: 20px;
-            margin-bottom: 10px;
-            color: #343a40;
-        }
-        #chat-data pre {
-            background-color: #e9ecef; /* Lighter background for code */
-            padding: 15px;
-            border-radius: 6px;
+         /* Make table scrollable horizontally on small screens */
+        #users-table-container, #rooms-list, #allocations-list, #complaints-list {
             overflow-x: auto;
-            font-size: 13px;
-            border: 1px solid #dee2e6;
-            color: #212529;
+        }
+        table {
+            min-width: 600px; /* Ensure table content doesn't break too much */
+        }
+    }
+
+    /* --- Toast Notifications --- */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        padding: 15px 20px;
+        border-radius: 6px;
+        color: white;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        opacity: 0;
+        transform: translateX(100%);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        min-width: 250px;
+        max-width: 350px;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .toast-success { background-color: #28a745; }
+    .toast-error { background-color: #dc3545; }
+    .toast-info { background-color: #17a2b8; }
+    .toast-warning { background-color: #ffc107; color: #212529; }
+
+    /* --- Modal Dialog --- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9990;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-content {
+        background-color: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        width: 90%;
+        max-width: 500px;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.show .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 15px;
+    }
+
+    .modal-header h3 { /* Uses existing h3 style from admin dashboard */
+        margin: 0; 
+    }
+
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        color: #6c757d;
+        padding: 0; /* Reset padding */
+    }
+    .modal-close-btn:hover {
+        color: #343a40;
+    }
+
+    .modal-body p { /* Uses existing p style from admin dashboard */
+        margin-bottom: 20px;
+    }
+    .modal-body p:last-child {
+        margin-bottom: 0;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+        margin-top: 20px;
+    }
+    
+    /* Modal buttons will use .btn base class assigned in JS, and these specific styles */
+    .modal-footer .modal-confirm-btn {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    .modal-footer .modal-confirm-btn:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .modal-footer .modal-cancel-btn {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    .modal-footer .modal-cancel-btn:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+</style>
+<header>
+    <h1>Admin Dashboard</h1>
+    <div id="user-info"></div>
+    <button id="logout-btn">Logout</button>
+</header>
+
+<nav>
+    <ul>
+        <li><button id="dashboard-btn" class="nav-btn active">Dashboard</button></li>
+        <li><button id="users-btn" class="nav-btn">Users</button></li>
+        <li><button id="halls-btn" class="nav-btn">Halls</button></li>
+        <li><button id="rooms-btn" class="nav-btn">Rooms</button></li>
+        <li><button id="allocations-btn" class="nav-btn">Allocations</button></li>
+        <li><button id="complaints-btn" class="nav-btn">Complaints</button></li>
+        <li><button id="chat-btn" class="nav-btn">Chat</button></li>
+    </ul>
+</nav>
+
+<main>
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" class="section active">
+        <h2>Dashboard Overview</h2>
+        <div class="dashboard-stats">
+            <div id="users-count"><!-- Content JS driven --></div>
+            <div id="halls-count"><!-- Content JS driven --></div>
+            <div id="complaints-count"><!-- Content JS driven --></div>
+        </div>
+    </section>
+
+    <!-- Users Section -->
+    <section id="users-section" class="section">
+        <h2>Users Management</h2>
+        <!-- Removed extra div here for direct section styling -->
+        <h3>All Users</h3>
+        <div id="users-table-container"> <!-- For potential overflow scroll -->
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Level</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Halls Section -->
+    <section id="halls-section" class="section">
+        <h2>Halls Management</h2>
+        <button id="create-hall-btn" style="margin-bottom: 20px;">Create New Hall</button>
+        <div id="create-hall-form" style="display: none;">
+            <h3>Create New Hall</h3>
+            <form id="hall-form">
+                <div class="form-group">
+                    <label for="hall-name">Name:</label>
+                    <input type="text" id="hall-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-rooms">Number of Rooms:</label>
+                    <input type="number" id="hall-rooms" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-min-level">Min Level:</label>
+                    <input type="number" id="hall-min-level" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-max-level">Max Level:</label>
+                    <input type="number" id="hall-max-level" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-academic-year">Academic Year:</label>
+                    <input type="text" id="hall-academic-year" required>
+                </div>
+                <div class="form-group">
+                    <label for="hall-open">Open for Allocation:
+                       <input type="checkbox" id="hall-open" style="vertical-align: middle; margin-left: 5px;">
+                    </label>
+                </div>
+                <button type="submit">Create Hall</button>
+            </form>
+        </div>
+        <h3>All Halls</h3>
+        <div id="halls-list"></div>
+    </section>
+
+    <!-- Rooms Section -->
+    <section id="rooms-section" class="section">
+        <h2>Rooms Management</h2>
+        <div id="hall-selector">
+            <div> <!-- Wrapped label and select for better flex alignment -->
+                <label for="hall-select">Select Hall:</label>
+                <select id="hall-select"></select>
+            </div>
+            <button id="load-rooms-btn">Load Rooms</button>
+        </div>
+        <button id="create-room-btn" style="margin-top: 10px; margin-bottom: 20px;">Create New Room</button>
+        <div id="create-room-form" style="display: none;">
+            <h3>Create New Room</h3>
+            <form id="room-form">
+                <div class="form-group">
+                    <label for="room-hall-id">Hall:</label>
+                    <select id="room-hall-id" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="room-number">Room Number:</label>
+                    <input type="text" id="room-number" required>
+                </div>
+                <div class="form-group">
+                    <label for="room-capacity">Capacity:</label>
+                    <input type="number" id="room-capacity" required>
+                </div>
+                <button type="submit">Create Room</button>
+            </form>
+        </div>
+        <h3>Rooms</h3>
+        <div id="rooms-list"></div> <!-- For table or card list -->
+    </section>
+
+    <!-- Allocations Section -->
+    <section id="allocations-section" class="section">
+        <h2>Room Allocations</h2>
+        <div id="allocation-filters">
+            <div>
+                <label for="allocation-hall">Hall:</label>
+                <select id="allocation-hall"></select>
+            </div>
+            <div>
+                <label for="allocation-status">Status:</label>
+                <select id="allocation-status">
+                    <option value="">All</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="VACATED">Vacated</option>
+                </select>
+            </div>
+            <div>
+                <label for="allocation-year">Academic Year:</label>
+                <input type="text" id="allocation-year">
+            </div>
+            <button id="filter-allocations-btn">Filter</button>
+        </div>
+        <h3>Allocations</h3>
+        <div id="allocations-list"></div>
+    </section>
+
+    <!-- Complaints Section -->
+    <section id="complaints-section" class="section">
+        <h2>Complaints Management</h2>
+        <div id="bulk-resolve-container">
+            <button id="bulk-resolve-btn">Bulk Resolve Selected</button>
+        </div>
+        <h3>All Complaints</h3>
+        <div id="complaints-list"></div>
+    </section>
+
+    <!-- Chat Section -->
+    <section id="chat-section" class="section">
+        <h2>Chat Interface</h2>
+        <!-- Removed extra div here -->
+        <div id="chat-query-container">
+            <form id="chat-form">
+                <div class="form-group">
+                    <label for="query-input">Ask a Question:</label>
+                    <textarea id="query-input" rows="4" required></textarea> <!-- Increased rows -->
+                </div>
+                 <!-- Context input, if needed in the future or as an example for more complex queries -->
+                <!-- 
+                <div class="form-group">
+                    <label for="context-input">Context (Optional):</label>
+                    <textarea id="context-input" rows="2"></textarea>
+                </div>
+                -->
+                <button type="submit">Submit Query</button>
+            </form>
+        </div>
+        <div id="chat-response-container"> <!-- This will be styled as a card -->
+             <h3>Response</h3>
+            <div id="chat-answer">Your answer will appear here.</div>
+            <div id="chat-data"><!-- Content JS driven --></div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // --- Toast Notification System ---
+    function showToast(message, type = 'info', duration = 3000) {
+        let toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container';
+            document.body.appendChild(toastContainer);
         }
 
-        /* Bulk actions */
-        #bulk-resolve-container {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e0e6ed;
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+
+        toastContainer.appendChild(toast);
+
+        // Trigger reflow to enable transition
+        toast.offsetHeight; 
+
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode === toastContainer) { // Check if still child
+                    toastContainer.removeChild(toast);
+                }
+                if (toastContainer.children.length === 0 && toastContainer.parentNode) { // Check if parentNode exists
+                    document.body.removeChild(toastContainer);
+                }
+            }, 300); // Match transition duration
+        }, duration);
+    }
+
+    // --- Modal Dialog System ---
+    function showModal(title, message, confirmCallback, cancelCallback = null, confirmText = 'Confirm', cancelText = 'Cancel') {
+        const existingModal = document.getElementById('dynamicModal');
+        if (existingModal) {
+            existingModal.remove();
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 992px) { /* Adjust breakpoint for nav */
-            nav {
-                width: 100%;
-                height: auto;
-                position: static; /* Change to static for small screens */
-                border-right: none;
-                border-bottom: 1px solid #dee2e6;
-                padding-top: 0;
-                box-shadow: none;
-            }
-            nav ul {
-                display: flex; /* Horizontal scroll or wrap */
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            nav li {
-                flex-grow: 1; /* Allow items to grow */
-            }
-            .nav-btn {
-                text-align: center;
-                border-left: none;
-                border-bottom: 4px solid transparent; /* Use bottom border for active state */
-                padding: 12px 15px;
-            }
-            .nav-btn:hover {
-                border-left-color: transparent; /* Override desktop hover */
-                border-bottom-color: #007bff;
-            }
-            .nav-btn.active {
-                border-left: none; /* Override desktop active */
-                border-bottom: 4px solid #007bff;
-            }
-            main {
-                margin-left: 0;
-                padding: 20px;
-            }
-        }
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = 'dynamicModal';
+        modalOverlay.className = 'modal-overlay';
 
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 15px;
-            }
-            
-            #user-info {
-                margin: 10px 0;
-                text-align: left;
-            }
-            
-            #logout-btn {
-                margin-top: 10px;
-                width: 100%; /* Full width logout on small screens */
-            }
-            
-            .dashboard-stats {
-                grid-template-columns: 1fr; /* Stack stats cards */
-            }
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        // Admin dashboard uses 'btn' as the base class for buttons.
+        const baseButtonClass = 'btn'; 
 
-            #allocation-filters, #hall-selector {
-                flex-direction: column; /* Stack filter items */
-                gap: 15px;
-            }
-            #allocation-filters > div, #hall-selector > div {
-                width: 100%; /* Full width filter inputs */
-            }
-            #allocation-filters button, #hall-selector button {
-                width: 100%; /* Full width filter button */
-            }
-
-            .hall-item > div {
-                flex-direction: column; /* Stack buttons in hall item */
-            }
-            .hall-item > div button {
-                width: 100%;
-            }
-
-             /* Make table scrollable horizontally on small screens */
-            #users-table-container, #rooms-list, #allocations-list, #complaints-list {
-                overflow-x: auto;
-            }
-            table {
-                min-width: 600px; /* Ensure table content doesn't break too much */
-            }
-        }
-    </style>
-    <header>
-        <h1>Admin Dashboard</h1>
-        <div id="user-info"></div>
-        <button id="logout-btn">Logout</button>
-    </header>
-
-    <nav>
-        <ul>
-            <li><button id="dashboard-btn" class="nav-btn active">Dashboard</button></li>
-            <li><button id="users-btn" class="nav-btn">Users</button></li>
-            <li><button id="halls-btn" class="nav-btn">Halls</button></li>
-            <li><button id="rooms-btn" class="nav-btn">Rooms</button></li>
-            <li><button id="allocations-btn" class="nav-btn">Allocations</button></li>
-            <li><button id="complaints-btn" class="nav-btn">Complaints</button></li>
-            <li><button id="chat-btn" class="nav-btn">Chat</button></li>
-        </ul>
-    </nav>
-
-    <main>
-        <!-- Dashboard Section -->
-        <section id="dashboard-section" class="section active">
-            <h2>Dashboard Overview</h2>
-            <div class="dashboard-stats">
-                <div id="users-count"><!-- Content JS driven --></div>
-                <div id="halls-count"><!-- Content JS driven --></div>
-                <div id="complaints-count"><!-- Content JS driven --></div>
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h3>${title}</h3>
+                <button class="modal-close-btn">&times;</button>
             </div>
-        </section>
-
-        <!-- Users Section -->
-        <section id="users-section" class="section">
-            <h2>Users Management</h2>
-            <!-- Removed extra div here for direct section styling -->
-            <h3>All Users</h3>
-            <div id="users-table-container"> <!-- For potential overflow scroll -->
-                <table id="users-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Level</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-list"></tbody>
-                </table>
+            <div class="modal-body">
+                <p>${message}</p>
             </div>
-        </section>
-
-        <!-- Halls Section -->
-        <section id="halls-section" class="section">
-            <h2>Halls Management</h2>
-            <button id="create-hall-btn" style="margin-bottom: 20px;">Create New Hall</button>
-            <div id="create-hall-form" style="display: none;">
-                <h3>Create New Hall</h3>
-                <form id="hall-form">
-                    <div class="form-group">
-                        <label for="hall-name">Name:</label>
-                        <input type="text" id="hall-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hall-rooms">Number of Rooms:</label>
-                        <input type="number" id="hall-rooms" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hall-min-level">Min Level:</label>
-                        <input type="number" id="hall-min-level" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hall-max-level">Max Level:</label>
-                        <input type="number" id="hall-max-level" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hall-academic-year">Academic Year:</label>
-                        <input type="text" id="hall-academic-year" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hall-open">Open for Allocation:
-                           <input type="checkbox" id="hall-open" style="vertical-align: middle; margin-left: 5px;">
-                        </label>
-                    </div>
-                    <button type="submit">Create Hall</button>
-                </form>
+            <div class="modal-footer">
+                <button class="${baseButtonClass} modal-cancel-btn">${cancelText}</button>
+                <button class="${baseButtonClass} modal-confirm-btn">${confirmText}</button>
             </div>
-            <h3>All Halls</h3>
-            <div id="halls-list"></div>
-        </section>
+        `;
+        
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
 
-        <!-- Rooms Section -->
-        <section id="rooms-section" class="section">
-            <h2>Rooms Management</h2>
-            <div id="hall-selector">
-                <div> <!-- Wrapped label and select for better flex alignment -->
-                    <label for="hall-select">Select Hall:</label>
-                    <select id="hall-select"></select>
-                </div>
-                <button id="load-rooms-btn">Load Rooms</button>
-            </div>
-            <button id="create-room-btn" style="margin-top: 10px; margin-bottom: 20px;">Create New Room</button>
-            <div id="create-room-form" style="display: none;">
-                <h3>Create New Room</h3>
-                <form id="room-form">
-                    <div class="form-group">
-                        <label for="room-hall-id">Hall:</label>
-                        <select id="room-hall-id" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="room-number">Room Number:</label>
-                        <input type="text" id="room-number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="room-capacity">Capacity:</label>
-                        <input type="number" id="room-capacity" required>
-                    </div>
-                    <button type="submit">Create Room</button>
-                </form>
-            </div>
-            <h3>Rooms</h3>
-            <div id="rooms-list"></div> <!-- For table or card list -->
-        </section>
+        modalOverlay.offsetHeight;
+        modalOverlay.classList.add('show');
 
-        <!-- Allocations Section -->
-        <section id="allocations-section" class="section">
-            <h2>Room Allocations</h2>
-            <div id="allocation-filters">
-                <div>
-                    <label for="allocation-hall">Hall:</label>
-                    <select id="allocation-hall"></select>
-                </div>
-                <div>
-                    <label for="allocation-status">Status:</label>
-                    <select id="allocation-status">
-                        <option value="">All</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="VACATED">Vacated</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="allocation-year">Academic Year:</label>
-                    <input type="text" id="allocation-year">
-                </div>
-                <button id="filter-allocations-btn">Filter</button>
-            </div>
-            <h3>Allocations</h3>
-            <div id="allocations-list"></div>
-        </section>
+        const closeModal = () => {
+            modalOverlay.classList.remove('show');
+            setTimeout(() => {
+                if (modalOverlay.parentNode) {
+                    modalOverlay.parentNode.removeChild(modalOverlay);
+                }
+            }, 300);
+        };
 
-        <!-- Complaints Section -->
-        <section id="complaints-section" class="section">
-            <h2>Complaints Management</h2>
-            <div id="bulk-resolve-container">
-                <button id="bulk-resolve-btn">Bulk Resolve Selected</button>
-            </div>
-            <h3>All Complaints</h3>
-            <div id="complaints-list"></div>
-        </section>
-
-        <!-- Chat Section -->
-        <section id="chat-section" class="section">
-            <h2>Chat Interface</h2>
-            <!-- Removed extra div here -->
-            <div id="chat-query-container">
-                <form id="chat-form">
-                    <div class="form-group">
-                        <label for="query-input">Ask a Question:</label>
-                        <textarea id="query-input" rows="4" required></textarea> <!-- Increased rows -->
-                    </div>
-                     <!-- Context input, if needed in the future or as an example for more complex queries -->
-                    <!-- 
-                    <div class="form-group">
-                        <label for="context-input">Context (Optional):</label>
-                        <textarea id="context-input" rows="2"></textarea>
-                    </div>
-                    -->
-                    <button type="submit">Submit Query</button>
-                </form>
-            </div>
-            <div id="chat-response-container"> <!-- This will be styled as a card -->
-                 <h3>Response</h3>
-                <div id="chat-answer">Your answer will appear here.</div>
-                <div id="chat-data"><!-- Content JS driven --></div>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // Global variables
-        const API_BASE_URL = 'http://localhost:8000';
-        let token = localStorage.getItem('token') || '';
-        let currentUser = null;
-
-        // Check authentication on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!token) {
-                // In a real app, redirect to a proper login page.
-                // For this example, we'll assume token is present or login flow is separate.
-                // Simulating login for dev: if (!token && window.location.pathname !== '/auth/login') { window.location.href = '/auth/login'; return; }
-                console.warn("No token found. UI might not work correctly without authentication.");
-            }
-            
-            // Initialize the dashboard
-            getCurrentUser(); // Call this even if token might be missing, to handle potential 401
-            setupEventListeners();
-            loadDashboardData();
-            showSection('dashboard-section'); // Ensure dashboard is shown by default
+        modalContent.querySelector('.modal-close-btn').addEventListener('click', () => {
+            closeModal();
+            if (cancelCallback) cancelCallback();
         });
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const sectionId = this.id.replace('-btn', '-section');
-                    showSection(sectionId);
-                });
-            });
+        modalContent.querySelector('.modal-cancel-btn').addEventListener('click', () => {
+            closeModal();
+            if (cancelCallback) cancelCallback();
+        });
 
-            // Logout button
-            document.getElementById('logout-btn').addEventListener('click', logout);
+        modalContent.querySelector('.modal-confirm-btn').addEventListener('click', () => {
+            closeModal();
+            confirmCallback();
+        });
 
-            // Forms
-            document.getElementById('hall-form').addEventListener('submit', createHall);
-            document.getElementById('room-form').addEventListener('submit', createRoom);
-            document.getElementById('chat-form').addEventListener('submit', submitChatQuery);
-
-            // Toggle forms
-            document.getElementById('create-hall-btn').addEventListener('click', () => {
-                toggleElement('create-hall-form');
-                 // Focus on the first input when form is shown
-                if (document.getElementById('create-hall-form').style.display === 'block') {
-                    document.getElementById('hall-name').focus();
-                }
-            });
-            document.getElementById('create-room-btn').addEventListener('click', () => {
-                toggleElement('create-room-form');
-                populateHallSelect('room-hall-id');
-                if (document.getElementById('create-room-form').style.display === 'block') {
-                    document.getElementById('room-hall-id').focus();
-                }
-            });
-
-            // Rooms section
-            document.getElementById('load-rooms-btn').addEventListener('click', loadRoomsByHall);
-
-            // Allocations section
-            document.getElementById('filter-allocations-btn').addEventListener('click', loadAllocations);
-
-            // Complaints section
-            document.getElementById('bulk-resolve-btn').addEventListener('click', bulkResolveComplaints);
-        }
-
-        // Authentication functions
-        async function getCurrentUser() {
-            if (!token) {
-                displayUserInfo(null); // Show a logged-out state or placeholder
-                return;
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+                if (cancelCallback) cancelCallback();
             }
-            try {
-                const response = await fetch(`${API_BASE_URL}/profile/me`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+        });
+    }
 
-                if (!response.ok) {
-                    if (response.status === 401) { // Handle unauthorized specifically
-                        console.warn('Unauthorized. Token might be invalid or expired.');
-                        logout(); // Perform logout actions
-                        return;
-                    }
-                    throw new Error(`Failed to get current user (status ${response.status})`);
-                }
 
-                currentUser = await response.json();
-                displayUserInfo(currentUser);
-            } catch (error) {
-                console.error('Error getting current user:', error);
-                displayUserInfo(null); // Display a state indicating error or not logged in
-                // Optionally, redirect to login if it's a persistent issue
-                // localStorage.removeItem('token');
-                // window.location.href = '/auth/login'; 
-            }
-        }
+    // Global variables
+    const API_BASE_URL = 'http://localhost:8000';
+    let token = localStorage.getItem('token') || '';
+    let currentUser = null;
 
-        function displayUserInfo(user) {
-            const userInfoDiv = document.getElementById('user-info');
-            if (user && user.name && user.email) {
-                userInfoDiv.innerHTML = `
-                    <p>Welcome, <strong>${user.name}</strong></p>
-                    <p><small>${user.email}</small></p>
-                `;
-            } else {
-                 userInfoDiv.innerHTML = `
-                    <p>Not logged in</p>
-                `;
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            token = ''; // Clear in-memory token
-            currentUser = null;
-            // Redirect to a login page or update UI to reflect logged-out state
-            // window.location.href = '/auth/login'; 
-            alert("You have been logged out.");
-            displayUserInfo(null); // Update user info display
-            showSection('dashboard-section'); // Or a dedicated logged-out view
-            // Redirect to login, assuming /auth/login is the login page path
-            window.location.href = '/auth/login'; 
-        }
-
-        // UI utility functions
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const sectionToShow = document.getElementById(sectionId);
-            const navButtonToActivate = document.getElementById(sectionId.replace('-section', '-btn'));
-
-            if (sectionToShow) {
-                sectionToShow.classList.add('active');
-            }
-            if (navButtonToActivate) {
-                navButtonToActivate.classList.add('active');
-            }
-            
-            // Load section-specific data
-            // Consider adding a loading state before fetching data
-            if (sectionId === 'dashboard-section') { // Always reload dashboard data or check if needed
-                loadDashboardData();
-            } else if (sectionId === 'users-section') {
-                loadUsers();
-            } else if (sectionId === 'halls-section') {
-                loadHalls();
-            } else if (sectionId === 'rooms-section') {
-                populateHallSelect('hall-select'); // Populate select for choosing a hall
-                // Optionally, clear or show a placeholder for rooms-list if no hall is selected yet
-                document.getElementById('rooms-list').innerHTML = '<p>Select a hall and click "Load Rooms" to see room details.</p>';
-            } else if (sectionId === 'allocations-section') {
-                populateHallSelect('allocation-hall');
-                loadAllocations(); // Load with default filters
-            } else if (sectionId === 'complaints-section') {
-                loadComplaints();
-            }
-        }
-
-        function toggleElement(elementId) {
-            const element = document.getElementById(elementId);
-            if (element.style.display === 'none' || element.style.display === '') {
-                element.style.display = 'block';
-            } else {
-                element.style.display = 'none';
-            }
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!token) {
+            console.warn("No token found. UI might not work correctly without authentication.");
         }
         
-        function showLoading(elementId, message = "Loading...") {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.innerHTML = `<p style="text-align:center; padding: 20px;"><em>${message}</em></p>`;
+        getCurrentUser();
+        setupEventListeners();
+        loadDashboardData();
+        showSection('dashboard-section');
+    });
+
+    // Setup event listeners
+    function setupEventListeners() {
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sectionId = this.id.replace('-btn', '-section');
+                showSection(sectionId);
+            });
+        });
+        document.getElementById('logout-btn').addEventListener('click', logout);
+        document.getElementById('hall-form').addEventListener('submit', createHall);
+        document.getElementById('room-form').addEventListener('submit', createRoom);
+        document.getElementById('chat-form').addEventListener('submit', submitChatQuery);
+        document.getElementById('create-hall-btn').addEventListener('click', () => {
+            toggleElement('create-hall-form');
+            if (document.getElementById('create-hall-form').style.display === 'block') {
+                document.getElementById('hall-name').focus();
             }
-        }
-
-        // Data loading functions
-        async function loadDashboardData() {
-            showLoading('users-count');
-            showLoading('halls-count');
-            showLoading('complaints-count');
-            try {
-                // Assuming /users/count, /halls/count, /complaints/summary endpoints exist for optimized counts
-                // For this example, we'll stick to fetching all and counting, but this is not ideal for large datasets.
-                const [usersResponse, hallsResponse, complaintsResponse] = await Promise.all([
-                    fetchData(`${API_BASE_URL}/users/`),
-                    fetchData(`${API_BASE_URL}/halls/`),
-                    fetchData(`${API_BASE_URL}/complaint/`)
-                ]);
-
-                const users = usersResponse || [];
-                const halls = hallsResponse || [];
-                const complaints = complaintsResponse || [];
-
-                document.getElementById('users-count').innerHTML = `
-                    <h3>Users</h3>
-                    <p>Total: ${users.length}</p>
-                `;
-                
-                document.getElementById('halls-count').innerHTML = `
-                    <h3>Halls</h3>
-                    <p>Total: ${halls.length}</p>
-                    <p>Open for Allocation: ${halls.filter(h => h.is_open_for_allocation).length}</p>
-                `;
-                
-                document.getElementById('complaints-count').innerHTML = `
-                    <h3>Complaints</h3>
-                    <p>Total: ${complaints.length}</p>
-                    <p>Pending: ${complaints.filter(c => c.status === 'PENDING').length}</p>
-                `;
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                document.getElementById('users-count').innerHTML = '<h3>Users</h3><p>Error loading data.</p>';
-                document.getElementById('halls-count').innerHTML = '<h3>Halls</h3><p>Error loading data.</p>';
-                document.getElementById('complaints-count').innerHTML = '<h3>Complaints</h3><p>Error loading data.</p>';
+        });
+        document.getElementById('create-room-btn').addEventListener('click', () => {
+            toggleElement('create-room-form');
+            populateHallSelect('room-hall-id');
+            if (document.getElementById('create-room-form').style.display === 'block') {
+                document.getElementById('room-hall-id').focus();
             }
+        });
+        document.getElementById('load-rooms-btn').addEventListener('click', loadRoomsByHall);
+        document.getElementById('filter-allocations-btn').addEventListener('click', loadAllocations);
+        document.getElementById('bulk-resolve-btn').addEventListener('click', bulkResolveComplaints);
+    }
+
+    // Authentication functions
+    async function getCurrentUser() {
+        if (!token) {
+            displayUserInfo(null);
+            return;
         }
-
-        async function loadUsers() {
-            showLoading('users-list', 'Loading users...');
-            try {
-                const users = await fetchData(`${API_BASE_URL}/users/`) || [];
-                const usersList = document.getElementById('users-list');
-                usersList.innerHTML = ''; // Clear previous content
-
-                if (users.length === 0) {
-                    usersList.innerHTML = '<tr><td colspan="5" style="text-align:center;">No users found.</td></tr>';
+        try {
+            const response = await fetch(`${API_BASE_URL}/profile/me`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.warn('Unauthorized. Token might be invalid or expired.');
+                    logout(); 
                     return;
                 }
-
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${user.id}</td>
-                        <td>${user.name || 'N/A'}</td>
-                        <td>${user.email || 'N/A'}</td>
-                        <td>${user.level || 'N/A'}</td>
-                        <td>
-                            <button class="btn-danger" onclick="deleteUser('${user.id}')">Delete</button>
-                        </td>
-                    `;
-                    usersList.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading users:', error);
-                 document.getElementById('users-list').innerHTML = `<tr><td colspan="5" style="text-align:center;">Error loading users: ${error.message}</td></tr>`;
+                throw new Error(`Failed to get current user (status ${response.status})`);
             }
+            currentUser = await response.json();
+            displayUserInfo(currentUser);
+        } catch (error) {
+            console.error('Error getting current user:', error);
+            displayUserInfo(null);
         }
+    }
 
-        async function loadHalls() {
-            showLoading('halls-list', 'Loading halls...');
-            try {
-                const halls = await fetchData(`${API_BASE_URL}/halls/`) || [];
-                const hallsList = document.getElementById('halls-list');
-                hallsList.innerHTML = '';
+    function displayUserInfo(user) {
+        const userInfoDiv = document.getElementById('user-info');
+        if (user && user.name && user.email) {
+            userInfoDiv.innerHTML = `<p>Welcome, <strong>${user.name}</strong></p><p><small>${user.email}</small></p>`;
+        } else {
+             userInfoDiv.innerHTML = `<p>Not logged in</p>`;
+        }
+    }
 
-                if (halls.length === 0) {
-                    hallsList.innerHTML = '<p style="text-align:center;">No halls found. You can create one using the button above.</p>';
-                    return;
-                }
+    function logout() {
+        localStorage.removeItem('token');
+        token = ''; 
+        currentUser = null;
+        showToast("You have been logged out.", "info");
+        displayUserInfo(null); 
+        showSection('dashboard-section'); 
+        window.location.href = '/auth/login'; 
+    }
 
+    // UI utility functions
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        
+        const sectionToShow = document.getElementById(sectionId);
+        const navButtonToActivate = document.getElementById(sectionId.replace('-section', '-btn'));
+
+        if (sectionToShow) sectionToShow.classList.add('active');
+        if (navButtonToActivate) navButtonToActivate.classList.add('active');
+        
+        if (sectionId === 'dashboard-section') loadDashboardData();
+        else if (sectionId === 'users-section') loadUsers();
+        else if (sectionId === 'halls-section') loadHalls();
+        else if (sectionId === 'rooms-section') {
+            populateHallSelect('hall-select'); 
+            document.getElementById('rooms-list').innerHTML = '<p>Select a hall and click "Load Rooms" to see room details.</p>';
+        } else if (sectionId === 'allocations-section') {
+            populateHallSelect('allocation-hall');
+            loadAllocations(); 
+        } else if (sectionId === 'complaints-section') loadComplaints();
+    }
+
+    function toggleElement(elementId) {
+        const element = document.getElementById(elementId);
+        element.style.display = (element.style.display === 'none' || element.style.display === '') ? 'block' : 'none';
+    }
+    
+    function showLoading(elementId, message = "Loading...") {
+        const element = document.getElementById(elementId);
+        if (element) element.innerHTML = `<p style="text-align:center; padding: 20px;"><em>${message}</em></p>`;
+    }
+
+    // Data loading functions
+    async function loadDashboardData() {
+        showLoading('users-count');
+        showLoading('halls-count');
+        showLoading('complaints-count');
+        try {
+            const [usersResponse, hallsResponse, complaintsResponse] = await Promise.all([
+                fetchData(`${API_BASE_URL}/users/`),
+                fetchData(`${API_BASE_URL}/halls/`),
+                fetchData(`${API_BASE_URL}/complaint/`)
+            ]);
+            const users = usersResponse || [];
+            const halls = hallsResponse || [];
+            const complaints = complaintsResponse || [];
+            document.getElementById('users-count').innerHTML = `<h3>Users</h3><p>Total: ${users.length}</p>`;
+            document.getElementById('halls-count').innerHTML = `<h3>Halls</h3><p>Total: ${halls.length}</p><p>Open for Allocation: ${halls.filter(h => h.is_open_for_allocation).length}</p>`;
+            document.getElementById('complaints-count').innerHTML = `<h3>Complaints</h3><p>Total: ${complaints.length}</p><p>Pending: ${complaints.filter(c => c.status === 'PENDING').length}</p>`;
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showToast(`Error loading dashboard data: ${error.message}`, 'error');
+            document.getElementById('users-count').innerHTML = '<h3>Users</h3><p>Error loading data.</p>';
+            document.getElementById('halls-count').innerHTML = '<h3>Halls</h3><p>Error loading data.</p>';
+            document.getElementById('complaints-count').innerHTML = '<h3>Complaints</h3><p>Error loading data.</p>';
+        }
+    }
+
+    async function loadUsers() {
+        showLoading('users-list', 'Loading users...');
+        try {
+            const users = await fetchData(`${API_BASE_URL}/users/`) || [];
+            const usersList = document.getElementById('users-list');
+            usersList.innerHTML = ''; 
+            if (users.length === 0) {
+                usersList.innerHTML = '<tr><td colspan="5" style="text-align:center;">No users found.</td></tr>';
+                return;
+            }
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${user.id}</td><td>${user.name || 'N/A'}</td><td>${user.email || 'N/A'}</td><td>${user.level || 'N/A'}</td><td><button class="btn-danger" onclick="deleteUser('${user.id}')">Delete</button></td>`;
+                usersList.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error loading users:', error);
+            showToast(`Error loading users: ${error.message}`, 'error');
+            document.getElementById('users-list').innerHTML = `<tr><td colspan="5" style="text-align:center;">Error loading users.</td></tr>`;
+        }
+    }
+
+    async function loadHalls() {
+        showLoading('halls-list', 'Loading halls...');
+        try {
+            const halls = await fetchData(`${API_BASE_URL}/halls/`) || [];
+            const hallsList = document.getElementById('halls-list');
+            hallsList.innerHTML = '';
+            if (halls.length === 0) {
+                hallsList.innerHTML = '<p style="text-align:center;">No halls found. You can create one using the button above.</p>';
+                return;
+            }
+            halls.forEach(hall => {
+                const hallDiv = document.createElement('div');
+                hallDiv.classList.add('hall-item');
+                hallDiv.innerHTML = `<h4>${hall.name}</h4><p><strong>Rooms:</strong> ${hall.no_of_rooms}</p><p><strong>Levels:</strong> ${hall.min_level} - ${hall.max_level}</p><p><strong>Academic Year:</strong> ${hall.academic_year}</p><p><strong>Open for Allocation:</strong> <span style="font-weight:bold; color: ${hall.is_open_for_allocation ? 'green' : 'red'};">${hall.is_open_for_allocation ? 'Yes' : 'No'}</span></p><div><button onclick="viewHall('${hall.id}')">View Rooms</button><button onclick="toggleHallAllocation('${hall.id}', ${!hall.is_open_for_allocation})">${hall.is_open_for_allocation ? 'Close Allocation' : 'Open Allocation'}</button><button class="btn-danger" onclick="deleteHall('${hall.id}')">Delete Hall</button></div>`;
+                hallsList.appendChild(hallDiv);
+            });
+        } catch (error) {
+            console.error('Error loading halls:', error);
+            showToast(`Error loading halls: ${error.message}`, 'error');
+            document.getElementById('halls-list').innerHTML = `<p style="text-align:center;">Error loading halls.</p>`;
+        }
+    }
+
+    async function populateHallSelect(selectId) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        select.disabled = true; 
+        select.innerHTML = '<option value="">Loading halls...</option>';
+        try {
+            const halls = await fetchData(`${API_BASE_URL}/halls/`) || [];
+            select.innerHTML = '<option value="">Select a Hall</option>'; 
+            if (halls.length > 0) {
                 halls.forEach(hall => {
-                    const hallDiv = document.createElement('div');
-                    hallDiv.classList.add('hall-item');
-                    hallDiv.innerHTML = `
-                        <h4>${hall.name}</h4>
-                        <p><strong>Rooms:</strong> ${hall.no_of_rooms}</p>
-                        <p><strong>Levels:</strong> ${hall.min_level} - ${hall.max_level}</p>
-                        <p><strong>Academic Year:</strong> ${hall.academic_year}</p>
-                        <p><strong>Open for Allocation:</strong> <span style="font-weight:bold; color: ${hall.is_open_for_allocation ? 'green' : 'red'};">${hall.is_open_for_allocation ? 'Yes' : 'No'}</span></p>
-                        <div>
-                            <button onclick="viewHall('${hall.id}')">View Rooms</button>
-                            <button onclick="toggleHallAllocation('${hall.id}', ${!hall.is_open_for_allocation})">
-                                ${hall.is_open_for_allocation ? 'Close Allocation' : 'Open Allocation'}
-                            </button>
-                            <button class="btn-danger" onclick="deleteHall('${hall.id}')">Delete Hall</button>
-                        </div>
-                    `;
-                    hallsList.appendChild(hallDiv);
+                    const option = document.createElement('option');
+                    option.value = hall.id;
+                    option.textContent = `${hall.name} (${hall.academic_year})`;
+                    select.appendChild(option);
                 });
-            } catch (error) {
-                console.error('Error loading halls:', error);
-                document.getElementById('halls-list').innerHTML = `<p style="text-align:center;">Error loading halls: ${error.message}</p>`;
+            } else {
+                select.innerHTML = '<option value="">No halls available</option>';
             }
+        } catch (error) {
+            console.error('Error populating hall select:', error);
+            showToast(`Error loading halls for dropdown: ${error.message}`, 'error');
+            select.innerHTML = `<option value="">Error loading halls</option>`;
+        } finally {
+            select.disabled = false; 
         }
+    }
 
-        async function populateHallSelect(selectId) {
-            const select = document.getElementById(selectId);
-            if (!select) return;
-            
-            select.disabled = true; // Disable while loading
-            select.innerHTML = '<option value="">Loading halls...</option>';
-
-            try {
-                const halls = await fetchData(`${API_BASE_URL}/halls/`) || [];
-                select.innerHTML = '<option value="">Select a Hall</option>'; // Default option
-
-                if (halls.length > 0) {
-                    halls.forEach(hall => {
-                        const option = document.createElement('option');
-                        option.value = hall.id;
-                        option.textContent = `${hall.name} (${hall.academic_year})`;
-                        select.appendChild(option);
-                    });
-                } else {
-                    select.innerHTML = '<option value="">No halls available</option>';
-                }
-            } catch (error) {
-                console.error('Error populating hall select:', error);
-                select.innerHTML = `<option value="">Error loading halls</option>`;
-            } finally {
-                select.disabled = false; // Re-enable after loading
-            }
+    async function loadRoomsByHall() {
+        const hallId = document.getElementById('hall-select').value;
+        const roomsListDiv = document.getElementById('rooms-list');
+        if (!hallId) {
+            showToast('Please select a hall first.', 'warning');
+            roomsListDiv.innerHTML = '<p style="text-align:center;">Please select a hall first.</p>';
+            return;
         }
-
-        async function loadRoomsByHall() {
-            const hallId = document.getElementById('hall-select').value;
-            const roomsListDiv = document.getElementById('rooms-list');
-            
-            if (!hallId) {
-                roomsListDiv.innerHTML = '<p style="text-align:center;">Please select a hall first.</p>';
+        showLoading('rooms-list', `Loading rooms for hall ID: ${hallId}...`);
+        try {
+            const rooms = await fetchData(`${API_BASE_URL}/halls/${hallId}/rooms`) || [];
+            roomsListDiv.innerHTML = ''; 
+            if (rooms.length === 0) {
+                roomsListDiv.innerHTML = '<p style="text-align:center;">No rooms found for this hall. You can create rooms using the button above.</p>';
                 return;
             }
-            showLoading('rooms-list', `Loading rooms for hall ID: ${hallId}...`);
-
-            try {
-                const rooms = await fetchData(`${API_BASE_URL}/halls/${hallId}/rooms`) || [];
-                roomsListDiv.innerHTML = ''; // Clear previous
-
-                if (rooms.length === 0) {
-                    roomsListDiv.innerHTML = '<p style="text-align:center;">No rooms found for this hall. You can create rooms using the button above.</p>';
-                    return;
-                }
-
-                const table = document.createElement('table');
-                table.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Room Number</th>
-                            <th>Capacity</th>
-                            <th>Current Occupancy</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                `;
-                const tbody = table.querySelector('tbody');
-                
-                rooms.forEach(room => {
-                    const row = document.createElement('tr');
-                    // Assuming room object might have occupancy details, otherwise default to 0 or N/A
-                    row.innerHTML = `
-                        <td>${room.id}</td>
-                        <td>${room.room_number}</td>
-                        <td>${room.capacity}</td>
-                        <td>${room.current_occupancy !== undefined ? room.current_occupancy : 'N/A'} / ${room.capacity}</td>
-                        <td>
-                            <button class="btn-danger" onclick="deleteRoom('${room.id}')">Delete Room</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-
-                roomsListDiv.appendChild(table);
-            } catch (error) {
-                console.error('Error loading rooms:', error);
-                roomsListDiv.innerHTML = `<p style="text-align:center;">Error loading rooms: ${error.message}</p>`;
-            }
+            const table = document.createElement('table');
+            table.innerHTML = `<thead><tr><th>ID</th><th>Room Number</th><th>Capacity</th><th>Current Occupancy</th><th>Actions</th></tr></thead><tbody></tbody>`;
+            const tbody = table.querySelector('tbody');
+            rooms.forEach(room => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${room.id}</td><td>${room.room_number}</td><td>${room.capacity}</td><td>${room.current_occupancy !== undefined ? room.current_occupancy : 'N/A'} / ${room.capacity}</td><td><button class="btn-danger" onclick="deleteRoom('${room.id}')">Delete Room</button></td>`;
+                tbody.appendChild(row);
+            });
+            roomsListDiv.appendChild(table);
+        } catch (error) {
+            console.error('Error loading rooms:', error);
+            showToast(`Error loading rooms: ${error.message}`, 'error');
+            roomsListDiv.innerHTML = `<p style="text-align:center;">Error loading rooms.</p>`;
         }
+    }
 
-        async function loadAllocations() {
-            const hallId = document.getElementById('allocation-hall').value;
-            const status = document.getElementById('allocation-status').value;
-            const academicYear = document.getElementById('allocation-year').value.trim();
-            const allocationsListDiv = document.getElementById('allocations-list');
-
-            showLoading('allocations-list', 'Loading allocations...');
-
-            let queryParams = [];
-            if (hallId) queryParams.push(`hall_id=${hallId}`);
-            if (status) queryParams.push(`status=${status}`);
-            if (academicYear) queryParams.push(`academic_year=${academicYear}`);
-
-            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-
-            try {
-                const allocations = await fetchData(`${API_BASE_URL}/allocate/allocations${queryString}`) || [];
-                allocationsListDiv.innerHTML = '';
-
-                if (allocations.length === 0) {
-                    allocationsListDiv.innerHTML = '<p style="text-align:center;">No allocations found matching your criteria.</p>';
-                    return;
-                }
-
-                const table = document.createElement('table');
-                table.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>User ID</th>
-                            <th>User Name</th>
-                            <th>Room</th>
-                            <th>Hall</th>
-                            <th>Status</th>
-                            <th>Academic Year</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                `;
-                const tbody = table.querySelector('tbody');
-                
-                allocations.forEach(allocation => {
-                    const row = document.createElement('tr');
-                    // Assuming allocation might have user_name, room_number, hall_name populated from backend
-                    row.innerHTML = `
-                        <td>${allocation.id}</td>
-                        <td>${allocation.user_id}</td>
-                        <td>${allocation.user_name || 'N/A'}</td>
-                        <td>${allocation.room_number || allocation.room_id}</td>
-                        <td>${allocation.hall_name || allocation.hall_id}</td>
-                        <td><span style="font-weight:bold; color:${allocation.status === 'ACTIVE' ? 'green' : 'orange'};">${allocation.status}</span></td>
-                        <td>${allocation.academic_year}</td>
-                        <td>
-                            ${allocation.status === 'ACTIVE' ? 
-                              `<button onclick="vacateRoom('${allocation.id}')">Vacate</button>` : 
-                              ''}
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-
-                allocationsListDiv.appendChild(table);
-            } catch (error) {
-                console.error('Error loading allocations:', error);
-                allocationsListDiv.innerHTML = `<p style="text-align:center;">Error loading allocations: ${error.message}</p>`;
-            }
-        }
-
-        async function loadComplaints() {
-            const complaintsListDiv = document.getElementById('complaints-list');
-            showLoading('complaints-list', 'Loading complaints...');
-            try {
-                const complaints = await fetchData(`${API_BASE_URL}/complaint/`) || [];
-                complaintsListDiv.innerHTML = '';
-
-                if (complaints.length === 0) {
-                    complaintsListDiv.innerHTML = '<p style="text-align:center;">No complaints found.</p>';
-                    return;
-                }
-
-                const table = document.createElement('table');
-                table.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th>Select</th>
-                            <th>ID</th>
-                            <th>Details</th>
-                            <th>Created By</th>
-                            <th>User Level</th>
-                            <th>Created At</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                `;
-                const tbody = table.querySelector('tbody');
-                
-                complaints.forEach(complaint => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            ${complaint.status === 'PENDING' ? 
-                              `<input type="checkbox" class="complaint-checkbox" value="${complaint.complaint_id}" title="Select to bulk resolve">` : 
-                              ''}
-                        </td>
-                        <td>${complaint.complaint_id}</td>
-                        <td title="${complaint.details || ''}">${(complaint.details || 'No details').substring(0,50)}${(complaint.details || '').length > 50 ? '...' : ''}</td>
-                        <td>${complaint.created_by_name || complaint.created_by}</td>
-                        <td>${complaint.user_level || 'N/A'}</td>
-                        <td>${new Date(complaint.created_at).toLocaleString()}</td>
-                        <td><span style="font-weight:bold; color:${complaint.status === 'PENDING' ? 'orange' : 'green'};">${complaint.status}</span></td>
-                        <td>
-                            ${complaint.status === 'PENDING' ? 
-                              `<button onclick="resolveComplaint('${complaint.complaint_id}')">Resolve</button>` : 
-                              'Resolved'}
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                complaintsListDiv.appendChild(table);
-            } catch (error) {
-                console.error('Error loading complaints:', error);
-                complaintsListDiv.innerHTML = `<p style="text-align:center;">Error loading complaints: ${error.message}</p>`;
-            }
-        }
-
-        // Chat functions
-        async function submitChatQuery(event) {
-            event.preventDefault();
-            const query = document.getElementById('query-input').value;
-            // const context = document.getElementById('context-input').value; // If context input is used
-            const chatAnswerDiv = document.getElementById('chat-answer');
-            const chatDataDiv = document.getElementById('chat-data');
-
-            chatAnswerDiv.innerHTML = '<p><em>Processing your query...</em></p>';
-            chatDataDiv.innerHTML = '';
-
-            try {
-                const response = await fetchData(`${API_BASE_URL}/chat/query`, 'POST', {
-                    query: query
-                    // context: context || null // If context input is used
-                });
-
-                chatAnswerDiv.innerHTML = `<p>${response.answer || "No answer received."}</p>`;
-                
-                if (response.data && response.data.length > 0) {
-                    chatDataDiv.innerHTML = `
-                        <h4>Supporting Data:</h4>
-                        <pre>${JSON.stringify(response.data, null, 2)}</pre>
-                    `;
-                } else if (response.data) { // Catches cases where response.data might be an empty object or array not caught by .length
-                     chatDataDiv.innerHTML = `<h4>Supporting Data:</h4><p><em>No specific data entities were directly used for this answer.</em></p>`;
-                }
-            } catch (error) {
-                console.error('Error submitting query:', error);
-                chatAnswerDiv.innerHTML = `<p style="color:red;"><strong>Error:</strong> ${error.message}</p>`;
-            }
-        }
-
-        // CRUD operations
-        async function createHall(event) {
-            event.preventDefault();
-            const name = document.getElementById('hall-name').value;
-            const noOfRooms = parseInt(document.getElementById('hall-rooms').value);
-            const minLevel = parseInt(document.getElementById('hall-min-level').value);
-            const maxLevel = parseInt(document.getElementById('hall-max-level').value);
-            const academicYear = document.getElementById('hall-academic-year').value;
-            const isOpenForAllocation = document.getElementById('hall-open').checked;
-
-            if (minLevel > maxLevel) {
-                alert("Min level cannot be greater than Max level.");
+    async function loadAllocations() {
+        const hallId = document.getElementById('allocation-hall').value;
+        const status = document.getElementById('allocation-status').value;
+        const academicYear = document.getElementById('allocation-year').value.trim();
+        const allocationsListDiv = document.getElementById('allocations-list');
+        showLoading('allocations-list', 'Loading allocations...');
+        let queryParams = [];
+        if (hallId) queryParams.push(`hall_id=${hallId}`);
+        if (status) queryParams.push(`status=${status}`);
+        if (academicYear) queryParams.push(`academic_year=${academicYear}`);
+        const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+        try {
+            const allocations = await fetchData(`${API_BASE_URL}/allocate/allocations${queryString}`) || [];
+            allocationsListDiv.innerHTML = '';
+            if (allocations.length === 0) {
+                allocationsListDiv.innerHTML = '<p style="text-align:center;">No allocations found matching your criteria.</p>';
                 return;
             }
-
-            try {
-                await fetchData(`${API_BASE_URL}/halls/`, 'POST', {
-                    name: name,
-                    no_of_rooms: noOfRooms,
-                    min_level: minLevel,
-                    max_level: maxLevel,
-                    academic_year: academicYear,
-                    is_open_for_allocation: isOpenForAllocation
-                });
-
-                alert('Hall created successfully!');
-                document.getElementById('hall-form').reset();
-                toggleElement('create-hall-form'); // Hide form
-                loadHalls(); // Refresh list
-                loadDashboardData(); // Update stats
-            } catch (error) {
-                console.error('Error creating hall:', error);
-                alert(`Error creating hall: ${error.message}`);
-            }
+            const table = document.createElement('table');
+            table.innerHTML = `<thead><tr><th>ID</th><th>User ID</th><th>User Name</th><th>Room</th><th>Hall</th><th>Status</th><th>Academic Year</th><th>Actions</th></tr></thead><tbody></tbody>`;
+            const tbody = table.querySelector('tbody');
+            allocations.forEach(allocation => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${allocation.id}</td><td>${allocation.user_id}</td><td>${allocation.user_name || 'N/A'}</td><td>${allocation.room_number || allocation.room_id}</td><td>${allocation.hall_name || allocation.hall_id}</td><td><span style="font-weight:bold; color:${allocation.status === 'ACTIVE' ? 'green' : 'orange'};">${allocation.status}</span></td><td>${allocation.academic_year}</td><td>${allocation.status === 'ACTIVE' ? `<button onclick="vacateRoom('${allocation.id}')">Vacate</button>` : ''}</td>`;
+                tbody.appendChild(row);
+            });
+            allocationsListDiv.appendChild(table);
+        } catch (error) {
+            console.error('Error loading allocations:', error);
+            showToast(`Error loading allocations: ${error.message}`, 'error');
+            allocationsListDiv.innerHTML = `<p style="text-align:center;">Error loading allocations.</p>`;
         }
+    }
 
-        async function createRoom(event) {
-            event.preventDefault();
-            const hallId = document.getElementById('room-hall-id').value;
-            const roomNumber = document.getElementById('room-number').value;
-            const capacity = parseInt(document.getElementById('room-capacity').value);
-
-            if (!hallId) {
-                alert("Please select a hall.");
+    async function loadComplaints() {
+        const complaintsListDiv = document.getElementById('complaints-list');
+        showLoading('complaints-list', 'Loading complaints...');
+        try {
+            const complaints = await fetchData(`${API_BASE_URL}/complaint/`) || [];
+            complaintsListDiv.innerHTML = '';
+            if (complaints.length === 0) {
+                complaintsListDiv.innerHTML = '<p style="text-align:center;">No complaints found.</p>';
                 return;
             }
-             if (capacity <= 0) {
-                alert("Capacity must be a positive number.");
-                return;
-            }
-
-            try {
-                await fetchData(`${API_BASE_URL}/rooms/`, 'POST', {
-                    hall_id: hallId,
-                    room_number: roomNumber,
-                    capacity: capacity
-                });
-
-                alert('Room created successfully!');
-                document.getElementById('room-form').reset();
-                toggleElement('create-room-form'); // Hide form
-                
-                // Refresh rooms list if the created room's hall is currently selected
-                const selectedHallForDisplay = document.getElementById('hall-select').value;
-                if (selectedHallForDisplay === hallId) {
-                    loadRoomsByHall();
-                }
-                // Potentially update hall's no_of_rooms if relevant, or re-fetch hall data
-            } catch (error) {
-                console.error('Error creating room:', error);
-                alert(`Error creating room: ${error.message}`);
-            }
+            const table = document.createElement('table');
+            table.innerHTML = `<thead><tr><th>Select</th><th>Title</th><th>Details</th><th>Created By</th><th>User Level</th><th>Created At</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody>`;
+            const tbody = table.querySelector('tbody');
+            complaints.forEach(complaint => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${complaint.status === 'PENDING' ? `<input type="checkbox" class="complaint-checkbox" value="${complaint.complaint_id}" title="Select to bulk resolve">` : ''}</td><td title="${complaint.title || 'No Title Provided'}">${(complaint.title || 'No Title Provided').substring(0,50)}${(complaint.title || '').length > 50 ? '...' : ''}</td><td title="${complaint.details || ''}">${(complaint.details || 'No details').substring(0,50)}${(complaint.details || '').length > 50 ? '...' : ''}</td><td>${complaint.created_by_name || complaint.created_by}</td><td>${complaint.user_level || 'N/A'}</td><td>${new Date(complaint.created_at).toLocaleString()}</td><td><span style="font-weight:bold; color:${complaint.status === 'PENDING' ? 'orange' : 'green'};">${complaint.status}</span></td><td>${complaint.status === 'PENDING' ? `<button onclick="resolveComplaint('${complaint.complaint_id}')">Resolve</button>` : 'Resolved'}</td>`;
+                tbody.appendChild(row);
+            });
+            complaintsListDiv.appendChild(table);
+        } catch (error) {
+            console.error('Error loading complaints:', error);
+            showToast(`Error loading complaints: ${error.message}`, 'error');
+            complaintsListDiv.innerHTML = `<p style="text-align:center;">Error loading complaints.</p>`;
         }
+    }
 
-        async function deleteUser(userId) {
-            if (confirm(`Are you sure you want to delete user ID: ${userId}? This action cannot be undone.`)) {
+    // Chat functions
+    async function submitChatQuery(event) {
+        event.preventDefault();
+        const query = document.getElementById('query-input').value;
+        const chatAnswerDiv = document.getElementById('chat-answer');
+        const chatDataDiv = document.getElementById('chat-data');
+        chatAnswerDiv.innerHTML = '<p><em>Processing your query...</em></p>';
+        chatDataDiv.innerHTML = '';
+        try {
+            const response = await fetchData(`${API_BASE_URL}/chat/query`, 'POST', { query: query });
+            chatAnswerDiv.innerHTML = `<p>${response.answer || "No answer received."}</p>`;
+            if (response.data && response.data.length > 0) {
+                chatDataDiv.innerHTML = `<h4>Supporting Data:</h4><pre>${JSON.stringify(response.data, null, 2)}</pre>`;
+            } else if (response.data) {
+                 chatDataDiv.innerHTML = `<h4>Supporting Data:</h4><p><em>No specific data entities were directly used for this answer.</em></p>`;
+            }
+        } catch (error) {
+            console.error('Error submitting query:', error);
+            showToast(`Chat Error: ${error.message}`, 'error');
+            chatAnswerDiv.innerHTML = `<p style="color:red;"><strong>Error:</strong> ${error.message}</p>`;
+        }
+    }
+
+    // CRUD operations
+    async function createHall(event) {
+        event.preventDefault();
+        const name = document.getElementById('hall-name').value;
+        const noOfRooms = parseInt(document.getElementById('hall-rooms').value);
+        const minLevel = parseInt(document.getElementById('hall-min-level').value);
+        const maxLevel = parseInt(document.getElementById('hall-max-level').value);
+        const academicYear = document.getElementById('hall-academic-year').value;
+        const isOpenForAllocation = document.getElementById('hall-open').checked;
+
+        if (minLevel > maxLevel) {
+            showToast("Min level cannot be greater than Max level.", "error");
+            return;
+        }
+        try {
+            await fetchData(`${API_BASE_URL}/halls/`, 'POST', { name, no_of_rooms: noOfRooms, min_level: minLevel, max_level: maxLevel, academic_year: academicYear, is_open_for_allocation: isOpenForAllocation });
+            showToast('Hall created successfully!', 'success');
+            document.getElementById('hall-form').reset();
+            toggleElement('create-hall-form');
+            loadHalls(); 
+            loadDashboardData();
+        } catch (error) {
+            console.error('Error creating hall:', error);
+            showToast(`Error creating hall: ${error.message}`, 'error');
+        }
+    }
+
+    async function createRoom(event) {
+        event.preventDefault();
+        const hallId = document.getElementById('room-hall-id').value;
+        const roomNumber = document.getElementById('room-number').value;
+        const capacity = parseInt(document.getElementById('room-capacity').value);
+
+        if (!hallId) {
+            showToast("Please select a hall.", "warning");
+            return;
+        }
+         if (capacity <= 0) {
+            showToast("Capacity must be a positive number.", "error");
+            return;
+        }
+        try {
+            await fetchData(`${API_BASE_URL}/rooms/`, 'POST', { hall_id: hallId, room_number: roomNumber, capacity: capacity });
+            showToast('Room created successfully!', 'success');
+            document.getElementById('room-form').reset();
+            toggleElement('create-room-form'); 
+            const selectedHallForDisplay = document.getElementById('hall-select').value;
+            if (selectedHallForDisplay === hallId) loadRoomsByHall();
+        } catch (error) {
+            console.error('Error creating room:', error);
+            showToast(`Error creating room: ${error.message}`, 'error');
+        }
+    }
+
+    async function deleteUser(userId) {
+        showModal(
+            'Confirm Deletion', 
+            `Are you sure you want to delete user ID: ${userId}? This action cannot be undone.`,
+            async () => {
                 try {
                     await fetchData(`${API_BASE_URL}/users/${userId}`, 'DELETE');
-                    alert('User deleted successfully.');
-                    loadUsers(); // Refresh user list
-                    loadDashboardData(); // Update dashboard stats
+                    showToast('User deleted successfully.', 'success');
+                    loadUsers(); 
+                    loadDashboardData(); 
                 } catch (error) {
                     console.error('Error deleting user:', error);
-                    alert(`Error deleting user: ${error.message}`);
+                    showToast(`Error deleting user: ${error.message}`, 'error');
                 }
             }
-        }
+        );
+    }
 
-        async function deleteHall(hallId) {
-            if (confirm(`Are you sure you want to delete hall ID: ${hallId}? This will also delete associated rooms and allocations. This action cannot be undone.`)) {
+    async function deleteHall(hallId) {
+        showModal(
+            'Confirm Deletion',
+            `Are you sure you want to delete hall ID: ${hallId}? This will also delete associated rooms and allocations. This action cannot be undone.`,
+            async () => {
                 try {
                     await fetchData(`${API_BASE_URL}/halls/${hallId}`, 'DELETE');
-                    alert('Hall deleted successfully.');
-                    loadHalls(); // Refresh hall list
-                    loadDashboardData(); // Update dashboard stats
-                    // If rooms for this hall were displayed, clear them
+                    showToast('Hall deleted successfully.', 'success');
+                    loadHalls(); 
+                    loadDashboardData(); 
                     if (document.getElementById('hall-select').value === hallId) {
                          document.getElementById('rooms-list').innerHTML = '<p style="text-align:center;">The selected hall has been deleted.</p>';
                     }
-                    populateHallSelect('hall-select'); // Repopulate hall selectors
+                    populateHallSelect('hall-select'); 
                     populateHallSelect('allocation-hall');
                 } catch (error) {
                     console.error('Error deleting hall:', error);
-                    alert(`Error deleting hall: ${error.message}`);
+                    showToast(`Error deleting hall: ${error.message}`, 'error');
                 }
             }
-        }
+        );
+    }
 
-        async function deleteRoom(roomId) {
-            if (confirm(`Are you sure you want to delete room ID: ${roomId}? This action cannot be undone.`)) {
+    async function deleteRoom(roomId) {
+         showModal(
+            'Confirm Deletion',
+            `Are you sure you want to delete room ID: ${roomId}? This action cannot be undone.`,
+            async () => {
                 try {
                     await fetchData(`${API_BASE_URL}/rooms/${roomId}`, 'DELETE');
-                    alert('Room deleted successfully.');
-                    loadRoomsByHall(); // Refresh room list for the currently selected hall
+                    showToast('Room deleted successfully.', 'success');
+                    loadRoomsByHall(); 
                 } catch (error) {
                     console.error('Error deleting room:', error);
-                    alert(`Error deleting room: ${error.message}`);
+                    showToast(`Error deleting room: ${error.message}`, 'error');
                 }
             }
-        }
+        );
+    }
 
-        async function toggleHallAllocation(hallId, isOpen) {
-            const action = isOpen ? 'open' : 'close';
-            if (confirm(`Are you sure you want to ${action} allocation for this hall?`)) {
+    async function toggleHallAllocation(hallId, isOpen) {
+        const action = isOpen ? 'open' : 'close';
+        showModal(
+            `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)} Allocation`,
+            `Are you sure you want to ${action} allocation for this hall?`,
+            async () => {
                 try {
                     await fetchData(`${API_BASE_URL}/halls/${hallId}/allocation-status?is_open=${isOpen}`, 'PUT');
-                    alert(`Hall allocation status successfully updated to ${action}.`);
-                    loadHalls(); // Refresh hall list to show new status
+                    showToast(`Hall allocation status successfully updated to ${action}.`, 'success');
+                    loadHalls(); 
                 } catch (error) {
                     console.error(`Error ${action}ing hall allocation:`, error);
-                    alert(`Error ${action}ing hall allocation: ${error.message}`);
+                    showToast(`Error ${action}ing hall allocation: ${error.message}`, 'error');
                 }
             }
-        }
+        );
+    }
 
-        async function vacateRoom(allocationId) {
-            if (confirm('Are you sure you want to mark this allocation as VACATED?')) {
+    async function vacateRoom(allocationId) {
+        showModal(
+            'Confirm Vacate Room',
+            'Are you sure you want to mark this allocation as VACATED?',
+            async () => {
                 try {
                     await fetchData(`${API_BASE_URL}/allocate/${allocationId}/vacate`, 'PUT');
-                    alert('Room vacated successfully.');
-                    loadAllocations(); // Refresh allocations list
+                    showToast('Room vacated successfully.', 'success');
+                    loadAllocations(); 
                 } catch (error) {
                     console.error('Error vacating room:', error);
-                    alert(`Error vacating room: ${error.message}`);
+                    showToast(`Error vacating room: ${error.message}`, 'error');
                 }
             }
-        }
+        );
+    }
 
-        async function resolveComplaint(complaintId) {
-            if (confirm('Are you sure you want to resolve this complaint?')) {
+    async function resolveComplaint(complaintId) {
+        showModal(
+            'Confirm Resolve Complaint',
+            'Are you sure you want to resolve this complaint?',
+            async () => {
                 try {
                     await fetchData(`${API_BASE_URL}/complaint/${complaintId}/resolve`, 'PUT');
-                    alert('Complaint resolved successfully.');
-                    loadComplaints(); // Refresh complaints list
-                    loadDashboardData(); // Update dashboard stats
+                    showToast('Complaint resolved successfully.', 'success');
+                    loadComplaints(); 
+                    loadDashboardData(); 
                 } catch (error) {
                     console.error('Error resolving complaint:', error);
-                    alert(`Error resolving complaint: ${error.message}`);
+                    showToast(`Error resolving complaint: ${error.message}`, 'error');
                 }
             }
+        );
+    }
+
+    async function bulkResolveComplaints() {
+        const selectedCheckboxes = document.querySelectorAll('.complaint-checkbox:checked');
+        const complaintIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+        
+        if (complaintIds.length === 0) {
+            showToast('Please select at least one complaint to resolve.', 'warning');
+            return;
         }
 
-        async function bulkResolveComplaints() {
-            const selectedCheckboxes = document.querySelectorAll('.complaint-checkbox:checked');
-            const complaintIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-            
-            if (complaintIds.length === 0) {
-                alert('Please select at least one complaint to resolve.');
-                return;
-            }
-
-            if (confirm(`Are you sure you want to resolve ${complaintIds.length} selected complaint(s)?`)) {
-                try {
-                    await fetchData(`${API_BASE_URL}/complaint/bulk-resolve`, 'POST', {
-                        complaint_ids: complaintIds
-                    });
-                    alert(`${complaintIds.length} complaint(s) resolved successfully.`);
-                    loadComplaints(); // Refresh complaints list
-                    loadDashboardData(); // Update dashboard stats
+        showModal(
+            'Confirm Bulk Resolve',
+            `Are you sure you want to resolve ${complaintIds.length} selected complaint(s)?`,
+            async () => {
+                 try {
+                    await fetchData(`${API_BASE_URL}/complaint/bulk-resolve`, 'POST', { complaint_ids: complaintIds });
+                    showToast(`${complaintIds.length} complaint(s) resolved successfully.`, 'success');
+                    loadComplaints(); 
+                    loadDashboardData(); 
                 } catch (error) {
                     console.error('Error bulk resolving complaints:', error);
-                    alert(`Error bulk resolving complaints: ${error.message}`);
+                    showToast(`Error bulk resolving complaints: ${error.message}`, 'error');
                 }
             }
-        }
+        );
+    }
 
-        function viewHall(hallId) {
-            // Navigate to Rooms section and pre-select the hall
-            document.getElementById('hall-select').value = hallId;
-            showSection('rooms-section'); // This will also call populateHallSelect
-            loadRoomsByHall(); // Then load its rooms
-        }
+    function viewHall(hallId) {
+        document.getElementById('hall-select').value = hallId;
+        showSection('rooms-section'); 
+        loadRoomsByHall(); 
+    }
 
-        // Utility function to fetch data from API
-        async function fetchData(url, method = 'GET', body = null) {
-            try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                };
-                // Add token to header only if it exists
-                if (token) {
-                    options.headers['Authorization'] = `Bearer ${token}`;
-                }
-
-
-                if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-                    options.body = JSON.stringify(body);
-                }
-
-                const response = await fetch(url, options);
-                
-                if (response.status === 401) { // Unauthorized
-                    console.warn("API request unauthorized. Logging out.");
-                    logout(); // Trigger logout flow
-                    throw new Error('Session expired or invalid. Please login again.');
-                }
-
-                if (!response.ok) {
-                    let errorData;
-                    try {
-                        errorData = await response.json();
-                    } catch (e) {
-                        errorData = { detail: response.statusText }; // Fallback if no JSON body
-                    }
-                    console.error("API Error Response:", errorData);
-                    throw new Error(errorData.detail || `API request failed with status ${response.status}`);
-                }
-
-                // For 204 No Content (e.g., DELETE operations)
-                if (response.status === 204) {
-                    return null; // Or return a success indicator like { success: true }
-                }
-
-                return await response.json();
-            } catch (error) {
-                console.error(`Error during API call to ${url} (${method}):`, error.message);
-                // Rethrow to be caught by calling function for specific UI updates
-                throw error;
+    // Utility function to fetch data from API
+    async function fetchData(url, method = 'GET', body = null) {
+        try {
+            const options = {
+                method: method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (token) options.headers['Authorization'] = `Bearer ${token}`;
+            if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+                options.body = JSON.stringify(body);
             }
+            const response = await fetch(url, options);
+            if (response.status === 401) {
+                console.warn("API request unauthorized. Logging out.");
+                // Note: logout() itself will show a toast.
+                logout(); 
+                throw new Error('Session expired or invalid. Please login again.');
+            }
+            if (!response.ok) {
+                let errorData;
+                try { errorData = await response.json(); } catch (e) { errorData = { detail: response.statusText }; }
+                console.error("API Error Response:", errorData);
+                throw new Error(errorData.detail || `API request failed with status ${response.status}`);
+            }
+            if (response.status === 204) return null;
+            return await response.json();
+        } catch (error) {
+            console.error(`Error during API call to ${url} (${method}):`, error.message);
+            throw error;
         }
-    </script>
+    }
+</script>
 </body>
 </html>

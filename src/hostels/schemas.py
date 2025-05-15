@@ -33,7 +33,7 @@ class BulkAllocationCreate(BaseModel):
 
 class RoomAllocationResponse(BaseModel):
     id: UUID4
-    user_id: UUID4
+    user_id: Optional[UUID4] | None
     room_id: int
     hall_id: UUID4
     status: AllocationStatus

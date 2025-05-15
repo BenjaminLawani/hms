@@ -6,6 +6,7 @@ from fastapi import (
     HTTPException,
     status,
 )
+from uuid import UUID
 from .models import Hall, Room
 from .schemas import (
     HallOccupancyStats,
@@ -194,7 +195,7 @@ def create_allocation(
     service = RoomAllocationService(db)
     try:
         result = service.allocate_room(
-            user_id=str(allocation.user_id),
+            user_id=(allocation.user_id),
             room_id=allocation.room_id,
             academic_year=allocation.academic_year
         )
@@ -238,7 +239,7 @@ def vacate_room(
 
 @allocation_router.get("/user/{user_id}", response_model=RoomAllocationResponse)
 def get_user_allocation(
-    user_id: str,
+    user_id: UUID,
     db: Session = Depends(get_db)
 ):
     """Get a user's current allocation"""

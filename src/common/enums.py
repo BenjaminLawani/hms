@@ -10,6 +10,7 @@ class Status(str, Enum):
     CLOSED = "closed"
     OPENED = "opened"
     RESOLVED = "resolved"
+    PENDING = "pending"
     
 class AllocationStatus(Enum):
     ALLOCATED = "allocated"
