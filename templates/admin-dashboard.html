@@ -286,6 +286,7 @@ box-sizing: border-box;
     #logout-btn,
     #create-hall-btn,
     #create-room-btn,
+    #create-user-btn, /* Added */
     #load-rooms-btn,
     #filter-allocations-btn,
     #bulk-resolve-btn {
@@ -297,6 +298,7 @@ box-sizing: border-box;
     #logout-btn:hover,
     #create-hall-btn:hover,
     #create-room-btn:hover,
+    #create-user-btn:hover, /* Added */
     #load-rooms-btn:hover,
     #filter-allocations-btn:hover,
     #bulk-resolve-btn:hover {
@@ -387,7 +389,7 @@ box-sizing: border-box;
     }
 
     /* Create Form Toggles (display:none by default in HTML) */
-    #create-hall-form, #create-room-form {
+    #create-hall-form, #create-room-form, #create-user-form { /* Added #create-user-form */
         padding: 20px;
         margin-top: 20px;
         border: 1px solid #e0e6ed;
@@ -675,7 +677,6 @@ box-sizing: border-box;
         <li><button id="rooms-btn" class="nav-btn">Rooms</button></li>
         <li><button id="allocations-btn" class="nav-btn">Allocations</button></li>
         <li><button id="complaints-btn" class="nav-btn">Complaints</button></li>
-        <li><button id="chat-btn" class="nav-btn">Chat</button></li>
     </ul>
 </nav>
 
@@ -693,7 +694,40 @@ box-sizing: border-box;
     <!-- Users Section -->
     <section id="users-section" class="section">
         <h2>Users Management</h2>
-        <!-- Removed extra div here for direct section styling -->
+        <button id="create-user-btn" style="margin-bottom: 20px;">Create New User</button>
+        <div id="create-user-form" style="display: none;">
+            <h3>Create New User</h3>
+            <form id="new-user-form">
+                <div class="form-group">
+                    <label for="user-first-name">First Name:</label>
+                    <input type="text" id="user-first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-last-name">Last Name:</label>
+                    <input type="text" id="user-last-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-email">Email:</label>
+                    <input type="email" id="user-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-level">Level:</label>
+                    <select id="user-level" required>
+                        <option value="">Select Level</option>
+                        <option value="100">100 Level</option>
+                        <option value="200">200 Level</option>
+                        <option value="300">300 Level</option>
+                        <option value="400">400 Level</option>
+                        <option value="500">500 Level</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="user-password">Password:</label>
+                    <input type="password" id="user-password" required>
+                </div>
+                <button type="submit">Create User</button>
+            </form>
+        </div>
         <h3>All Users</h3>
         <div id="users-table-container"> <!-- For potential overflow scroll -->
             <table id="users-table">
@@ -820,31 +854,6 @@ box-sizing: border-box;
     </section>
 
     <!-- Chat Section -->
-    <section id="chat-section" class="section">
-        <h2>Chat Interface</h2>
-        <!-- Removed extra div here -->
-        <div id="chat-query-container">
-            <form id="chat-form">
-                <div class="form-group">
-                    <label for="query-input">Ask a Question:</label>
-                    <textarea id="query-input" rows="4" required></textarea> <!-- Increased rows -->
-                </div>
-                 <!-- Context input, if needed in the future or as an example for more complex queries -->
-                <!-- 
-                <div class="form-group">
-                    <label for="context-input">Context (Optional):</label>
-                    <textarea id="context-input" rows="2"></textarea>
-                </div>
-                -->
-                <button type="submit">Submit Query</button>
-            </form>
-        </div>
-        <div id="chat-response-container"> <!-- This will be styled as a card -->
-             <h3>Response</h3>
-            <div id="chat-answer">Your answer will appear here.</div>
-            <div id="chat-data"><!-- Content JS driven --></div>
-        </div>
-    </section>
 </main>
 
 <script>
@@ -901,7 +910,7 @@ box-sizing: border-box;
         modalContent.innerHTML = `
             <div class="modal-header">
                 <h3>${title}</h3>
-                <button class="modal-close-btn">&times;</button>
+                <button class="modal-close-btn">×</button>
             </div>
             <div class="modal-body">
                 <p>${message}</p>
@@ -977,15 +986,27 @@ box-sizing: border-box;
             });
         });
         document.getElementById('logout-btn').addEventListener('click', logout);
+        
+        // User creation form
+        document.getElementById('create-user-btn').addEventListener('click', () => {
+            toggleElement('create-user-form');
+            if (document.getElementById('create-user-form').style.display === 'block') {
+                document.getElementById('user-first-name').focus();
+            }
+        });
+        document.getElementById('new-user-form').addEventListener('submit', createNewUser);
+
+        // Hall creation form
         document.getElementById('hall-form').addEventListener('submit', createHall);
-        document.getElementById('room-form').addEventListener('submit', createRoom);
-        document.getElementById('chat-form').addEventListener('submit', submitChatQuery);
         document.getElementById('create-hall-btn').addEventListener('click', () => {
             toggleElement('create-hall-form');
             if (document.getElementById('create-hall-form').style.display === 'block') {
                 document.getElementById('hall-name').focus();
             }
         });
+
+        // Room creation form
+        document.getElementById('room-form').addEventListener('submit', createRoom);
         document.getElementById('create-room-btn').addEventListener('click', () => {
             toggleElement('create-room-form');
             populateHallSelect('room-hall-id');
@@ -993,9 +1014,11 @@ box-sizing: border-box;
                 document.getElementById('room-hall-id').focus();
             }
         });
+
         document.getElementById('load-rooms-btn').addEventListener('click', loadRoomsByHall);
         document.getElementById('filter-allocations-btn').addEventListener('click', loadAllocations);
         document.getElementById('bulk-resolve-btn').addEventListener('click', bulkResolveComplaints);
+        document.getElementById('chat-form').addEventListener('submit', submitChatQuery);
     }
 
     // Authentication functions
@@ -1254,9 +1277,40 @@ box-sizing: border-box;
             const table = document.createElement('table');
             table.innerHTML = `<thead><tr><th>Select</th><th>Title</th><th>Details</th><th>Created By</th><th>User Level</th><th>Created At</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody>`;
             const tbody = table.querySelector('tbody');
+            
             complaints.forEach(complaint => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${complaint.status === 'PENDING' ? `<input type="checkbox" class="complaint-checkbox" value="${complaint.complaint_id}" title="Select to bulk resolve">` : ''}</td><td title="${complaint.title || 'No Title Provided'}">${(complaint.title || 'No Title Provided').substring(0,50)}${(complaint.title || '').length > 50 ? '...' : ''}</td><td title="${complaint.details || ''}">${(complaint.details || 'No details').substring(0,50)}${(complaint.details || '').length > 50 ? '...' : ''}</td><td>${complaint.created_by_name || complaint.created_by}</td><td>${complaint.user_level || 'N/A'}</td><td>${new Date(complaint.created_at).toLocaleString()}</td><td><span style="font-weight:bold; color:${complaint.status === 'PENDING' ? 'orange' : 'green'};">${complaint.status}</span></td><td>${complaint.status === 'PENDING' ? `<button onclick="resolveComplaint('${complaint.complaint_id}')">Resolve</button>` : 'Resolved'}</td>`;
+
+                let checkboxCellContent = '';
+                let statusColor = 'gray'; // Default color for unknown statuses
+                let actionCellContent = '';
+
+                if (complaint.status === 'pending') {
+                    checkboxCellContent = `<input type="checkbox" class="complaint-checkbox" value="${complaint.complaint_id}" title="Select to bulk resolve">`;
+                    statusColor = 'orange'; // PENDING complaints are orange (needs attention)
+                    actionCellContent = `<button onclick="resolveComplaint('${complaint.complaint_id}')">Resolve</button>`;
+                } else if (complaint.status === 'resolved') {
+                    checkboxCellContent = ''; // No checkbox for already resolved complaints
+                    statusColor = 'green';  // RESOLVED complaints are green (completed)
+                    actionCellContent = 'Resolved';
+                    if (complaint.resolved_at) {
+                        actionCellContent += ` on ${new Date(complaint.resolved_at).toLocaleDateString()}`;
+                    }
+                } else {
+                    // Fallback for any other statuses if they exist
+                    statusColor = 'gray';
+                    actionCellContent = complaint.status || 'N/A'; // Display the status itself or N/A
+                }
+
+                row.innerHTML = `
+                    <td>${checkboxCellContent}</td>
+                    <td title="${complaint.title || 'No Title Provided'}">${(complaint.title || 'No Title Provided').substring(0,50)}${(complaint.title || '').length > 50 ? '...' : ''}</td>
+                    <td title="${complaint.details || ''}">${(complaint.details || 'No details').substring(0,50)}${(complaint.details || '').length > 50 ? '...' : ''}</td>
+                    <td>${complaint.created_by_name || complaint.created_by}</td>
+                    <td>${complaint.user_level || 'N/A'}</td>
+                    <td>${new Date(complaint.created_at).toLocaleString()}</td>
+                    <td><span style="font-weight:bold; color:${statusColor};">${complaint.status}</span></td>
+                    <td>${actionCellContent}</td>`;
                 tbody.appendChild(row);
             });
             complaintsListDiv.appendChild(table);
@@ -1265,9 +1319,7 @@ box-sizing: border-box;
             showToast(`Error loading complaints: ${error.message}`, 'error');
             complaintsListDiv.innerHTML = `<p style="text-align:center;">Error loading complaints.</p>`;
         }
-    }
-
-    // Chat functions
+    }    // Chat functions
     async function submitChatQuery(event) {
         event.preventDefault();
         const query = document.getElementById('query-input').value;
@@ -1291,6 +1343,46 @@ box-sizing: border-box;
     }
 
     // CRUD operations
+    async function createNewUser(event) {
+        event.preventDefault();
+        const firstName = document.getElementById('user-first-name').value;
+        const lastName = document.getElementById('user-last-name').value;
+        const email = document.getElementById('user-email').value;
+        const level = document.getElementById('user-level').value;
+        const password = document.getElementById('user-password').value;
+
+        if (password !== confirmPassword) {
+            showToast('Passwords do not match.', 'error');
+            return;
+        }
+        if (!level) {
+            showToast('Please select a user level.', 'warning');
+            return;
+        }
+
+        const userData = {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            level: level,
+            password: password
+        };
+
+        try {
+            // Using the /auth/get-started endpoint which uses UserCreate schema
+            await fetchData(`${API_BASE_URL}/auth/get-started`, 'POST', userData);
+            showToast('User created successfully!', 'success');
+            document.getElementById('new-user-form').reset();
+            toggleElement('create-user-form');
+            loadUsers(); 
+            loadDashboardData(); // To update user count
+        } catch (error) {
+            console.error('Error creating user:', error);
+            showToast(`Error creating user: ${error.message}`, 'error');
+        }
+    }
+
+
     async function createHall(event) {
         event.preventDefault();
         const name = document.getElementById('hall-name').value;
@@ -1511,8 +1603,18 @@ box-sizing: border-box;
                 console.error("API Error Response:", errorData);
                 throw new Error(errorData.detail || `API request failed with status ${response.status}`);
             }
-            if (response.status === 204) return null;
-            return await response.json();
+            if (response.status === 204) return null; // No Content
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return await response.json();
+            } else {
+                // Handle cases where response might not be JSON (e.g. /auth/get-started returns UserResponse which is JSON)
+                // If a non-JSON response is expected for some endpoint, this part might need adjustment.
+                // For now, assuming JSON or no content.
+                const text = await response.text();
+                console.warn(`Non-JSON response from ${url}: ${text}`);
+                return text ? { detail: text } : null; // Or throw an error if JSON is always expected
+            }
         } catch (error) {
             console.error(`Error during API call to ${url} (${method}):`, error.message);
             throw error;

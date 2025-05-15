@@ -143,6 +143,12 @@ def create_complaint(
     current_user: User = Depends(get_current_user) # This is the creator
 ):
     try:
+        if not current_user: # Safeguard, though get_current_user should raise 401
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not authenticated."
+            )
+            
         new_complaint = Complaint(
             title = complaint.title,
             content = complaint.content,
@@ -189,6 +195,13 @@ def resolve_complaint(
     """
     Resolve a single complaint by ID.
     """
+    # if not current_admin: # Safeguard for current_admin being None
+    #     # This case should ideally be caught by the is_admin dependency
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Admin user not properly authenticated or authorized."
+    #     )
+        
     try:
         complaint = db.query(Complaint).filter(Complaint.id == complaint_id).first()
         if not complaint:
@@ -198,11 +211,9 @@ def resolve_complaint(
             )
         
         if complaint.status == Status.RESOLVED:
-            # Return current resolved state instead of raising an error, or choose to error.
-            # For idempotency, often good to return current state.
             complaint_log_existing = db.query(ComplaintUser).filter(ComplaintUser.complaint_id == complaint_id).first()
             return ResolveResponse(
-                complaint_id=str(complaint.id),
+                complaint_id=str(complaint.id), # Ensure complaint_id is string
                 status=complaint.status,
                 resolved_by=str(complaint_log_existing.resolved_by) if complaint_log_existing and complaint_log_existing.resolved_by else None,
                 resolved_at=complaint_log_existing.resolved_at if complaint_log_existing else None,
@@ -215,10 +226,13 @@ def resolve_complaint(
             ComplaintUser.complaint_id == complaint_id
         ).first()
         
-        if not complaint_log: # Should not happen if complaint exists
-            raise HTTPException(status_code=500, detail="Complaint log missing for existing complaint.")
+        if not complaint_log: 
+            # This situation implies data inconsistency, as a complaint should always have a log.
+            # Rollback status change on complaint if log is missing for atomicity.
+            db.rollback() # Rollback the complaint.status change
+            raise HTTPException(status_code=500, detail="Complaint log missing for existing complaint. Resolution aborted.")
 
-        complaint_log.resolved_by = current_admin.id
+        complaint_log.resolved_by = current_admin.id # This line caused the error if current_admin was None
         complaint_log.resolved_at = datetime.now()
         
         db.commit()
@@ -226,18 +240,17 @@ def resolve_complaint(
         db.refresh(complaint_log)
         
         return ResolveResponse(
-            complaint_id=str(complaint.id),
+            complaint_id=str(complaint.id), # Ensure complaint_id is string
             status=complaint.status,
-            resolved_by=str(complaint_log.resolved_by),
+            resolved_by=str(complaint_log.resolved_by) if complaint_log.resolved_by else None, # Ensure resolved_by is string
             resolved_at=complaint_log.resolved_at
         )
-    except HTTPException as e:
-        db.rollback() # Rollback only if it's an HTTP exception we raised, otherwise commit might have happened.
-                      # Better to put commit at the very end of try block if all ops succeed.
-        raise e
+    except HTTPException: # Re-raise HTTPExceptions directly
+        db.rollback() 
+        raise
     except Exception as e:
         db.rollback()
-        print(f"Error in resolve_complaint: {e}")
+        print(f"Error in resolve_complaint: {e}") # Log the original error
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while resolving the complaint: {str(e)}"
@@ -249,6 +262,13 @@ def bulk_resolve_complaints(
     db: Session = Depends(get_db),
     current_admin: User = Depends(is_admin)
 ):
+    # if not current_admin: # Safeguard for current_admin being None
+    #     # This case should ideally be caught by the is_admin dependency
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Admin user not properly authenticated or authorized."
+    #     )
+
     if not request.complaint_ids:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -256,63 +276,112 @@ def bulk_resolve_complaints(
         )
     
     results = []
-    current_time = datetime.now() # Use a single timestamp for all resolved in this batch
+    current_time = datetime.now() 
     
-    # Fetch all relevant complaints and logs in fewer queries if possible
-    complaints_to_update = db.query(Complaint).filter(
-        Complaint.id.in_(request.complaint_ids),
-        Complaint.status != Status.RESOLVED # Only act on non-resolved ones
-    ).all()
-
-    complaint_ids_found = {c.id for c in complaints_to_update}
-
-    for complaint_id_req in request.complaint_ids:
-        if complaint_id_req not in complaint_ids_found:
+    complaint_uuids = []
+    for complaint_id_str_or_uuid in request.complaint_ids:
+        try:
+            # Handle both string UUIDs and UUID objects if the frontend sends mixed types
+            if isinstance(complaint_id_str_or_uuid, UUID):
+                complaint_uuids.append(complaint_id_str_or_uuid)
+            else:
+                complaint_uuids.append(UUID(str(complaint_id_str_or_uuid)))
+        except ValueError:
             results.append(ResolveResponse(
-                complaint_id=str(complaint_id_req),
-                status=None, # Or fetch current status to report it
+                complaint_id=str(complaint_id_str_or_uuid),
+                status=None, # Explicitly set None for status as per schema
                 resolved_by=None,
                 resolved_at=None,
-                message=f"Complaint with ID {complaint_id_req} not found or already resolved."
+                message=f"Invalid UUID format: {str(complaint_id_str_or_uuid)}"
             ))
+    
+    # Filter out complaint_ids that already have a result due to invalid format
+    valid_complaint_uuids_to_process = [
+        uid for uid in complaint_uuids 
+        if str(uid) not in (r.complaint_id for r in results if r.message and "Invalid UUID format" in r.message)
+    ]
 
-    if not complaints_to_update: # All were not found or already resolved
-        db.commit() # Commit any other pending changes if any, or just return
+    if not valid_complaint_uuids_to_process:
+        return results # Return results if all were invalid UUIDs or list was empty
+
+    # Fetch complaints that are not yet resolved
+    complaints_to_update = db.query(Complaint).filter(
+        Complaint.id.in_(valid_complaint_uuids_to_process),
+        Complaint.status != Status.RESOLVED
+    ).all()
+    
+    complaint_ids_to_update = {c.id for c in complaints_to_update}
+
+    # Fetch corresponding complaint logs for those to be updated
+    complaint_logs_dict = {
+        log.complaint_id: log 
+        for log in db.query(ComplaintUser).filter(ComplaintUser.complaint_id.in_(complaint_ids_to_update)).all()
+    }
+    
+    # Handle complaints that were not found or already resolved among the valid UUIDs
+    for uid in valid_complaint_uuids_to_process:
+        if uid not in complaint_ids_to_update: # Not in the list of "to be updated"
+            # Check if it exists at all or is already resolved
+            existing_complaint = db.query(Complaint).filter(Complaint.id == uid).first()
+            if existing_complaint:
+                if existing_complaint.status == Status.RESOLVED:
+                    # Fetch its log to provide resolved_by/at details
+                    existing_log = db.query(ComplaintUser).filter(ComplaintUser.complaint_id == uid).first()
+                    results.append(ResolveResponse(
+                        complaint_id=str(uid),
+                        status=existing_complaint.status,
+                        resolved_by=str(existing_log.resolved_by) if existing_log and existing_log.resolved_by else None,
+                        resolved_at=existing_log.resolved_at if existing_log else None,
+                        message="Complaint was already resolved."
+                    ))
+                # else: complaint exists but status is not PENDING nor RESOLVED (if other statuses exist)
+                # This case is unlikely if only PENDING/RESOLVED are used for this flow.
+            else: # Complaint not found
+                results.append(ResolveResponse(
+                    complaint_id=str(uid),
+                    status=None, # Explicitly set None for status
+                    resolved_by=None,
+                    resolved_at=None,
+                    message=f"Complaint with ID {str(uid)} not found."
+                ))
+
+    if not complaints_to_update: # All valid UUIDs were either not found or already resolved
         return results
 
     try:
         for complaint in complaints_to_update:
             complaint.status = Status.RESOLVED
             
-            complaint_log = db.query(ComplaintUser).filter(
-                ComplaintUser.complaint_id == complaint.id
-            ).first()
+            complaint_log = complaint_logs_dict.get(complaint.id)
             
-            if complaint_log: # Should always exist
-                complaint_log.resolved_by = current_admin.id
+            if complaint_log:
+                complaint_log.resolved_by = current_admin.id # This line caused the error
                 complaint_log.resolved_at = current_time
                 
                 results.append(ResolveResponse(
                     complaint_id=str(complaint.id),
                     status=complaint.status,
-                    resolved_by=str(complaint_log.resolved_by),
+                    resolved_by=str(complaint_log.resolved_by) if complaint_log.resolved_by else None,
                     resolved_at=complaint_log.resolved_at
                 ))
-            else: # Should not happen
-                 results.append(ResolveResponse(
+            else: 
+                # Data inconsistency: complaint exists but its log doesn't.
+                # The status of this complaint is updated in memory, but we might choose to not commit it
+                # or handle it differently. For now, report it.
+                results.append(ResolveResponse(
                     complaint_id=str(complaint.id),
                     status=complaint.status, # Status is updated in memory
                     resolved_by=None,
                     resolved_at=None,
-                    message=f"Complaint log not found for {complaint.id}, but status updated in transaction."
+                    message=f"Complaint log not found for {complaint.id}. Status updated in transaction, but log details incomplete."
                 ))
         
-        db.commit() # Commit all changes at once
+        db.commit()
         
-        return results
+        return results  
     except Exception as e:
         db.rollback()
-        print(f"Error in bulk_resolve_complaints: {e}")
+        print(f"Error in bulk_resolve_complaints: {e}") # Log the original error
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred during bulk resolution: {str(e)}"

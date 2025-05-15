@@ -76,6 +76,7 @@ def is_admin(current_user: User = Depends(get_current_user)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail= "Not an administrator"
         )
+    return current_user
     
 
 def generate_random_password(length=12):
