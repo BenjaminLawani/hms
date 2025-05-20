@@ -28,5 +28,6 @@ class User(Base):
                         default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True),
                         onupdate=func.now(), nullable=True)
+    phone_number = Column(String(11), nullable=True)
 
 Base.metadata.create_all(bind=engine)

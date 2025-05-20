@@ -20,6 +20,7 @@ from src.hostels.routes import(
 )
 from src.chat.routes import chat_router
 from src.dashboard.routes import dashboard_router
+from src.calendar.routes import router
 
 templates = Jinja2Templates(directory="templates")
 
@@ -50,6 +51,7 @@ app.include_router(chat_router)
 app.include_router(room_router),
 app.include_router(allocation_router)
 app.include_router(dashboard_router)
+app.include_router(router)
 
 @app.get("/")
 def root(request: Request):

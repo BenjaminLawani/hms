@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> HostelHub Student Dashboard</title>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 </head>
 <body>
     <style>
@@ -27,6 +28,8 @@
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+
 
     /* Variables for modal cancel button consistency */
     --button-secondary-bg: var(--border-color);
@@ -269,9 +272,6 @@ select {
     color: var(--text-color-secondary);
 }
 
-/* #logoutBtn { } */
-    /* Uses .button and .button-secondary styles now *
-
 
 /* Sections */
 .dashboard-section {
@@ -282,7 +282,7 @@ select {
     box-shadow: var(--shadow-md);
     margin-bottom: 32px;
 }
-.dashboard-section.active { /* Added to ensure initial display if needed */
+.dashboard-section.active { 
     display: block;
 }
 
@@ -296,9 +296,6 @@ select {
     color: var(--text-color-primary);
 }
 
-#deleteAccountBtn { 
-    /* Uses .button and .button-danger styles */
-}
 
 /* Room Allocation */
 #currentAllocation, #availableHalls, #roomAllocationRequestBox { 
@@ -339,58 +336,137 @@ select {
     margin-bottom: 4px;
 }
 
-/* #vacateRoomBtn { } */
-    /* Uses .button and .button-secondary styles *}
+/* --- Chat Popup Specific Styles --- */
 
-
-/* Complaints Section */
-/* #complaintForm textarea {} */
-    /* width: 100%; Already handled by global textarea styles */
-
-
-/* Chat Section */
-#chatContainer {
+/* Floating Chat Button */
+.floating-chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white; /* For SVG currentColor and any text */
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
-    height: 500px; 
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: var(--card-bg-color);
+    align-items: center;
+    justify-content: center;
+    z-index: 1010; /* Above most content */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    padding: 0;
+}
+.floating-chat-button svg {
+    width: 28px;
+    height: 28px;
+}
+.floating-chat-button:hover {
+    background-color: var(--primary-color-hover);
+    transform: scale(1.05);
 }
 
-#chatMessages {
+/* Chat Popup */
+.chat-popup {
+    position: fixed;
+    bottom: 90px; /* Position above the button */
+    right: 20px;
+    width: 350px;
+    height: 500px; /* Matches original #chatContainer height */
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1005; /* Below floating button when closed, but above other content */
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+.chat-popup.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.chat-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: var(--primary-color-light);
+    border-bottom: 1px solid var(--border-color);
+}
+.chat-popup-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 0; /* Override general h3 margin */
+    margin-bottom: 0; /* Override general h3 margin */
+}
+.chat-popup-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-color-muted);
+    padding: 0; /* Remove button default padding */
+}
+.chat-popup-close-btn:hover {
+    color: var(--text-color-primary);
+}
+
+/* Original Chat Section Content - now adapted for popup */
+.chat-popup #chatContainer {
+    flex-grow: 1; /* Takes remaining space after header */
+    display: flex;
+    flex-direction: column;
+    /* height: 100%;  Let flex-grow handle height */
+    border: none; /* Popup has its own border/shadow */
+    border-radius: 0 0 8px 8px; /* Match popup bottom radius if header is part of it*/
+    overflow: hidden;
+    background-color: var(--card-bg-color); /* Or inherit */
+}
+
+.chat-popup #chatMessages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 16px;
     background-color: var(--bg-color); 
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
-#chatForm {
-    padding: 16px;
+.chat-popup #chatForm {
+    padding: 12px;
     border-top: 1px solid var(--border-color);
-    margin-bottom: 0;
+    margin-bottom: 0; /* Override general form margin */
     background-color: var(--card-bg-color);
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: flex-start; 
 }
-#chatForm div {
+.chat-popup #chatForm div { /* Wrapper for textarea */
     flex-grow: 1;
 }
-#chatForm label { display: none; } 
-#chatForm textarea {
-    min-height: 44px; 
-    height: 44px;
-    padding: 10px 12px;
+.chat-popup #chatForm label { display: none; } 
+.chat-popup #chatForm textarea {
+    min-height: 40px; 
+    height: 40px; /* Auto grows with content up to max if set by browser */
+    padding: 8px 10px;
     margin-bottom: 0; 
+    font-size: 13px;
 }
-#chatForm button {
-    height: 44px; 
+.chat-popup #chatForm button {
+    height: 40px; 
     flex-shrink: 0; 
+    padding: 0 15px; /* Adjusted padding for send button */
+    font-size: 13px;
 }
 
 
@@ -491,13 +567,36 @@ select {
     h2 {
         font-size: 20px;
     }
-    #chatForm {
+
+    /* Chat form responsiveness within popup */
+    .chat-popup #chatForm {
         flex-direction: column;
     }
-    #chatForm button {
+    .chat-popup #chatForm button {
         width: 100%;
     }
 }
+
+@media (max-width: 400px) {
+    .floating-chat-button {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
+    .floating-chat-button svg {
+        width: 24px;
+        height: 24px;
+    }
+    .chat-popup {
+        width: calc(100% - 30px); /* Full width with small margins */
+        max-width: 350px;
+        height: clamp(300px, 70vh, 450px); /* Responsive height */
+        right: 15px;
+        bottom: 75px; /* Adjusted based on new button size */
+    }
+}
+
 
 /* --- Toast Notifications --- */
 .toast-container {
@@ -560,7 +659,7 @@ select {
     background-color: var(--card-bg-color);
     padding: 25px;
     border-radius: 8px;
-    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)); /* Use existing or define new shadow */
+    box-shadow: var(--shadow-lg); 
     width: 90%;
     max-width: 500px;
     transform: scale(0.9);
@@ -607,6 +706,21 @@ select {
 .modal-body p:last-child {
     margin-bottom: 0;
 }
+/* Added for event description in modal */
+.modal-body .event-description-container {
+    margin-top: 10px;
+}
+.modal-body .event-description-content {
+    margin-top: 5px;
+    padding: 8px;
+    background-color: var(--bg-color);
+    border-radius: 4px;
+    max-height: 150px; /* Or more, adjust as needed */
+    overflow-y: auto;
+    white-space: pre-wrap; /* Handles newlines correctly */
+    word-break: break-word; /* Prevents long strings from breaking layout */
+}
+
 
 .modal-footer {
     display: flex;
@@ -620,23 +734,72 @@ select {
 .modal-footer .modal-confirm-btn {
     background-color: var(--primary-color);
     color: white;
-    /* border: 1px solid var(--primary-color); */ /* General button style does not have border */
 }
 .modal-footer .modal-confirm-btn:hover {
     background-color: var(--primary-color-hover);
-    /* border-color: var(--primary-color-hover); */
 }
 
 .modal-footer .modal-cancel-btn {
     background-color: var(--button-secondary-bg);
     color: var(--button-secondary-color);
-    border: 1px solid var(--border-color); /* Match .button-secondary border */
+    border: 1px solid var(--border-color); 
 }
 .modal-footer .modal-cancel-btn:hover {
     background-color: var(--button-secondary-hover-bg);
     color: var(--button-secondary-hover-color);
-    border-color: var(--border-color); /* Keep border consistent on hover */
+    border-color: var(--border-color); 
 }
+
+/* Remove old event card styles */
+/*
+#student-events-list .event-card {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm); 
+    transition: box-shadow 0.2s ease-in-out;
+}
+#student-events-list .event-card:hover {
+    box-shadow: var(--shadow-md);
+}
+#student-events-list .event-card h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.1em; 
+    color: var(--primary-color);
+}
+#student-events-list .event-card p {
+    font-size: 0.9em; 
+    margin-bottom: 8px;
+    color: var(--text-color-secondary);
+    line-height: 1.5;
+}
+#student-events-list .event-card .event-time strong,
+#student-events-list .event-card .event-location strong {
+    color: var(--text-color-primary);
+}
+*/
+/* Remove grid layout for #student-events-list as FullCalendar handles it */
+/*
+#student-events-list {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+*/
+
+/* FullCalendar Customizations (Optional - FullCalendar has good defaults) */
+#student-events-list { /* This is now the calendar container */
+    min-height: 500px; /* Ensure it has some height before calendar loads */
+}
+/* You can target FullCalendar elements if needed, e.g.: */
+/* .fc-event { background-color: var(--primary-color-light); border-color: var(--primary-color); color: var(--primary-color-hover); } */
+/* .fc-daygrid-event-dot { border-color: var(--primary-color) !important; } */
+/* .fc .fc-button-primary { background-color: var(--primary-color); border-color: var(--primary-color); } */
+/* .fc .fc-button-primary:hover { background-color: var(--primary-color-hover); border-color: var(--primary-color-hover); } */
+
+
     </style>
     <header>
         <h1>Student Dashboard</h1>
@@ -650,7 +813,7 @@ select {
         <button data-section="profile">Profile</button>
         <button data-section="room">Room Allocation</button>
         <button data-section="complaints">Complaints</button>
-        <button data-section="chat">Chat Assistant</button>
+        <button data-section="events">Events</button>
     </nav>
 
     <main>
@@ -661,6 +824,8 @@ select {
                 <p>Name: <span id="profileName">Loading...</span></p>
                 <p>Email: <span id="profileEmail">Loading...</span></p>
                 <p>Level: <span id="profileLevel">Loading...</span></p>
+                <p>Department: <span id="profileDepartment">Loading...</span></p>
+                <p>Phone Number: <span id="phoneNumber">Loading...</span></p>
             </div>
             <h3>Update Profile</h3>
             <form id="updateProfileForm">
@@ -748,22 +913,41 @@ select {
             </div>
         </section>
 
-        <!-- Chat Assistant Section -->
-        <section id="chat" class="dashboard-section">
-            <h2>Chat Assistant</h2>
-            <div id="chatContainer">
-                <div id="chatMessages">
-                </div>
-                <form id="chatForm">
-                    <div>
-                        <label for="chatQuery">Ask a question:</label>
-                        <textarea id="chatQuery" name="query" rows="2" placeholder="Type your message..." required></textarea>
-                    </div>
-                    <button type="submit">Send</button>
-                </form>
+        <!-- Events Section - Now for Calendar -->
+        <section id="events" class="dashboard-section">
+            <h2>Upcoming Events</h2>
+            <div id="student-events-list">
+                <!-- FullCalendar will be rendered here -->
             </div>
         </section>
+
     </main>
+
+    <!-- Floating Chat Button -->
+    <button id="openChatBtn" class="floating-chat-button" aria-label="Open Chat Assistant">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+        </svg>
+    </button>
+
+    <!-- Chat Popup -->
+    <div id="chatPopup" class="chat-popup">
+        <div class="chat-popup-header">
+            <h3>Chat Assistant</h3>
+            <button id="closeChatPopupBtn" class="chat-popup-close-btn" aria-label="Close Chat Assistant">×</button>
+        </div>
+        <div id="chatContainer"> 
+            <div id="chatMessages"></div>
+            <form id="chatForm"> 
+                <div>
+                    <label for="chatQuery">Ask a question:</label>
+                    <textarea id="chatQuery" name="query" rows="1" placeholder="Type your message..." required></textarea>
+                </div>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
 
     <script>
         // --- Toast Notification System ---
@@ -810,16 +994,15 @@ select {
             const modalContent = document.createElement('div');
             modalContent.className = 'modal-content';
             
-            // Student dashboard uses 'button' as the base class for buttons.
-            const baseButtonClass = 'button';
+            const baseButtonClass = 'button'; // Ensure this class exists or buttons are styled directly
 
             modalContent.innerHTML = `
                 <div class="modal-header">
                     <h3>${title}</h3>
-                    <button class="modal-close-btn">&times;</button>
+                    <button class="modal-close-btn">×</button>
                 </div>
                 <div class="modal-body">
-                    <p>${message}</p>
+                    <p>${message}</p> 
                 </div>
                 <div class="modal-footer">
                     <button class="${baseButtonClass} modal-cancel-btn">${cancelText}</button>
@@ -842,22 +1025,32 @@ select {
                 }, 300);
             };
 
-            modalContent.querySelector('.modal-close-btn').addEventListener('click', () => {
-                closeModal();
-                if (cancelCallback) cancelCallback();
-            });
-            modalContent.querySelector('.modal-cancel-btn').addEventListener('click', () => {
-                closeModal();
-                if (cancelCallback) cancelCallback();
-            });
-            modalContent.querySelector('.modal-confirm-btn').addEventListener('click', () => {
+            const confirmBtn = modalContent.querySelector('.modal-confirm-btn');
+            const cancelBtn = modalContent.querySelector('.modal-cancel-btn');
+
+            confirmBtn.addEventListener('click', () => {
                 closeModal();
                 confirmCallback();
             });
+
+            if (cancelText && cancelText.trim() !== '') {
+                cancelBtn.addEventListener('click', () => {
+                    closeModal();
+                    if (cancelCallback) cancelCallback();
+                });
+            } else {
+                cancelBtn.style.display = 'none'; // Hide cancel button if no text or callback
+            }
+            
+            modalContent.querySelector('.modal-close-btn').addEventListener('click', () => {
+                closeModal();
+                if (cancelCallback && (cancelText && cancelText.trim() !== '')) cancelCallback(); // Only call if cancel was an option
+            });
+
             modalOverlay.addEventListener('click', (e) => {
                 if (e.target === modalOverlay) {
                     closeModal();
-                    if (cancelCallback) cancelCallback();
+                    if (cancelCallback && (cancelText && cancelText.trim() !== '')) cancelCallback(); // Only call if cancel was an option
                 }
             });
         }
@@ -865,7 +1058,19 @@ select {
         // Global variables
         let token = localStorage.getItem('token');
         let currentUser = null;
+        let calendarInstance = null; // For FullCalendar
         
+        // Corrected escapeHtml function
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                 .replace(/&/g, "&")
+                 .replace(/</g, "<")
+                 .replace(/>/g, ">")
+                 .replace(/"/g, "\"")
+                 .replace(/'/g, "'");
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
             if (!token) {
                 window.location.href = '/auth/login';
@@ -886,16 +1091,44 @@ select {
                 document.getElementById('deleteAccountBtn').addEventListener('click', deleteAccount);
                 document.getElementById('roomRequestForm').addEventListener('submit', requestRoom);
                 document.getElementById('complaintForm').addEventListener('submit', submitComplaint);
-                document.getElementById('chatForm').addEventListener('submit', sendChatQuery);
                 document.getElementById('logoutBtn').addEventListener('click', logout);
                 document.getElementById('hallSelect').addEventListener('change', loadAvailableRooms);
+
+                const openChatBtn = document.getElementById('openChatBtn');
+                const closeChatPopupBtn = document.getElementById('closeChatPopupBtn');
+                const chatPopup = document.getElementById('chatPopup');
+                const chatQueryInput = document.getElementById('chatQuery');
+
+                if (openChatBtn && chatPopup) {
+                    openChatBtn.addEventListener('click', () => {
+                        chatPopup.classList.toggle('show');
+                        if (chatPopup.classList.contains('show') && chatQueryInput) {
+                            chatQueryInput.focus();
+                        }
+                    });
+                }
+                if (closeChatPopupBtn && chatPopup) {
+                    closeChatPopupBtn.addEventListener('click', () => {
+                        chatPopup.classList.remove('show');
+                    });
+                }
+                document.getElementById('chatForm').addEventListener('submit', sendChatQuery);
+
+                document.addEventListener('click', function(event) {
+                    if (chatPopup && chatPopup.classList.contains('show')) {
+                        const isClickInsideChatPopup = chatPopup.contains(event.target);
+                        const isClickOnOpenButton = openChatBtn ? openChatBtn.contains(event.target) || openChatBtn === event.target : false;
+
+                        if (!isClickInsideChatPopup && !isClickOnOpenButton) {
+                            chatPopup.classList.remove('show');
+                        }
+                    }
+                });
                 
             } catch (error) {
                 console.error('Initialization error:', error);
-                // Error object might have status property from apiRequest
                 if (error.status === 401) { 
                     localStorage.removeItem('token');
-                    // showToast is available here
                     showToast('Your session has expired. Please log in again.', 'error', 5000);
                     setTimeout(() => window.location.href = '/auth/login', 5000);
                 } else {
@@ -908,10 +1141,14 @@ select {
             document.querySelectorAll('.dashboard-section').forEach(section => section.style.display = 'none');
             const activeSection = document.getElementById(sectionId);
             if (activeSection) activeSection.style.display = 'block';
+            
             document.querySelectorAll('nav button').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.section === sectionId) btn.classList.add('active');
             });
+            if (sectionId === 'events') {
+                initializeCalendarIfNeeded(); // Changed from loadStudentSideEvents
+            }
         }
         
         async function apiRequest(endpoint, method = 'GET', data = null) {
@@ -924,9 +1161,8 @@ select {
             const response = await fetch(endpoint, options);
             if (response.status === 401) {
                 localStorage.removeItem('token');
-                // showToast is available here
                 showToast('Your session has expired. Please log in again.', 'error', 5000);
-                setTimeout(() => window.location.href = '/auth/login', 5000); // Delay redirect to allow toast to be seen
+                setTimeout(() => window.location.href = '/auth/login', 5000); 
                 throw { status: 401, message: 'Unauthorized - Session Expired' };
             }
             if (!response.ok) {
@@ -948,6 +1184,9 @@ select {
                 document.getElementById('profileName').textContent = currentUser.name || 'N/A';
                 document.getElementById('profileEmail').textContent = currentUser.email || 'N/A';
                 document.getElementById('profileLevel').textContent = currentUser.level || 'N/A';
+                document.getElementById('profileDepartment').textContent = currentUser.department || 'N/A';
+                document.getElementById('phoneNumber').textContent = currentUser.phone_number || 'N/A';
+
                 const nameParts = (currentUser.name || '').split(' ');
                 document.getElementById('firstName').value = nameParts[0] || '';
                 document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
@@ -1007,14 +1246,14 @@ select {
                     allocationDetails.innerHTML = '<p>You do not have a current room allocation.</p>';
                     return;
                 }
-                const allocation = Array.isArray(allocations) ? allocations.find(a => a.status === 'ALLOCATED' || a.status === 'ACTIVE') || allocations[0] : allocations;
+                const allocation = Array.isArray(allocations) ? allocations.find(a => a.status === 'allocated' || a.status === 'active') || allocations[0] : allocations;
                 if (!allocation) {
                      allocationDetails.innerHTML = '<p>No active room allocation found.</p>';
                     return;
                 }
                 const room = await apiRequest(`/rooms/${allocation.room_id}`);
                 const hall = await apiRequest(`/halls/${room.hall_id}`);
-                allocationDetails.innerHTML = `<p><strong>Hall:</strong> ${hall.name}</p><p><strong>Room:</strong> ${room.room_number}</p><p><strong>Academic Year:</strong> ${allocation.academic_year}</p><p><strong>Status:</strong> <span style="text-transform: capitalize;">${allocation.status.toLowerCase()}</span></p>${ (allocation.status === 'ALLOCATED' || allocation.status === 'ACTIVE') ? `<button id="vacateRoomBtn" class="button button-secondary" data-id="${allocation.id}" style="margin-top: 10px;">Vacate Room</button>` : ''}`;
+                allocationDetails.innerHTML = `<p><strong>Hall:</strong> ${escapeHtml(hall.name)}</p><p><strong>Room:</strong> ${escapeHtml(room.room_number)}</p><p><strong>Academic Year:</strong> ${escapeHtml(allocation.academic_year)}</p><p><strong>Status:</strong> <span style="text-transform: capitalize;">${escapeHtml(allocation.status.toLowerCase())}</span></p>${ (allocation.status === 'allocated' || allocation.status === 'active') ? `<button id="vacateRoomBtn" class="button button-secondary" data-id="${allocation.id}" style="margin-top: 10px;">Vacate Room</button>` : ''}`;
                 if (document.getElementById('vacateRoomBtn')) {
                     document.getElementById('vacateRoomBtn').addEventListener('click', function() {
                         vacateRoom(this.dataset.id);
@@ -1045,11 +1284,11 @@ select {
                 }
                 let hallsHtml = '<ul>';
                 halls.forEach(hall => {
-                    hallsHtml += `<li><h4>${hall.name}</h4><p>Academic Year: ${hall.academic_year || 'N/A'}</p><p>Level Range: ${hall.min_level || 'Any'} - ${hall.max_level || 'Any'}</p><p style="color: ${hall.is_open_for_allocation ? 'var(--success-color, green)' : 'var(--danger-color, red)'}; font-weight: 500;">${hall.is_open_for_allocation ? 'Open for allocation' : 'Closed for allocation'}</p></li>`;
+                    hallsHtml += `<li><h4>${escapeHtml(hall.name)}</h4><p>Academic Year: ${escapeHtml(hall.academic_year || 'N/A')}</p><p>Level Range: ${escapeHtml(hall.min_level || 'Any')} - ${escapeHtml(hall.max_level || 'Any')}</p><p style="color: ${hall.is_open_for_allocation ? 'var(--success-color, green)' : 'var(--danger-color, red)'}; font-weight: 500;">${hall.is_open_for_allocation ? 'Open for allocation' : 'Closed for allocation'}</p></li>`;
                     if (hall.is_open_for_allocation) {
                         const option = document.createElement('option');
                         option.value = hall.id;
-                        option.textContent = `${hall.name} (${hall.academic_year || 'General'})`;
+                        option.textContent = `${escapeHtml(hall.name)} (${escapeHtml(hall.academic_year || 'General')})`;
                         hallSelect.appendChild(option);
                     }
                 });
@@ -1082,7 +1321,7 @@ select {
                 rooms.forEach(room => {
                     const option = document.createElement('option');
                     option.value = room.id;
-                    option.textContent = `Room ${room.room_number} (Capacity: ${room.capacity}, Available: ${room.capacity - (room.allocations_count || 0)})`;
+                    option.textContent = `Room ${escapeHtml(room.room_number)} (Capacity: ${room.capacity}, Available: ${room.capacity - (room.allocations_count || 0)})`;
                     roomSelect.appendChild(option);
                 });
                 roomsContainer.style.display = 'block';
@@ -1182,21 +1421,106 @@ select {
                 console.error('Failed to get chat response:', error);
                 const errorMessageDiv = document.createElement('div');
                 errorMessageDiv.classList.add('error-message'); 
-                errorMessageDiv.innerHTML = `<strong>Error:</strong> Failed to get response. ${escapeHtml(error.message)}`;
+                errorMessageDiv.innerHTML = `<strong>Error:</strong> Failed to get response. ${escapeHtml(error.message || 'Unknown error')}`;
                 chatMessagesDiv.appendChild(errorMessageDiv);
             } finally {
                 chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; 
             }
         }
 
-        function escapeHtml(unsafe) {
-            if (typeof unsafe !== 'string') return '';
-            return unsafe
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
+        async function initializeCalendarIfNeeded() {
+            const calendarEl = document.getElementById('student-events-list');
+            if (!calendarEl) {
+                console.error("Calendar container #student-events-list not found.");
+                return;
+            }
+
+            if (!calendarInstance) {
+                calendarEl.innerHTML = '<p>Loading calendar...</p>';
+                try {
+                    const apiEvents = await apiRequest('/calendar/'); // Fetch all events
+                    
+                    const now = new Date();
+                    // Filter for events that are upcoming or currently ongoing
+                    const relevantEvents = apiEvents
+                        .filter(event => {
+                            const startTime = new Date(event.start_time);
+                            const endTime = new Date(event.end_time);
+                            return endTime > now; // Event ends in the future
+                        })
+                        .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+
+                    const fcEvents = relevantEvents.map(event => ({
+                        id: event.id,
+                        title: event.title, // FullCalendar handles escaping titles by default
+                        start: event.start_time,
+                        end: event.end_time,
+                        allDay: !event.start_time.includes('T'), // Basic heuristic for all-day events
+                        extendedProps: {
+                            description: event.description,
+                            location: event.location
+                        }
+                        // You can add custom colors/classes here if needed:
+                        // color: event.type === 'workshop' ? 'var(--primary-color)' : 'var(--secondary-color)', 
+                        // className: 'custom-event-class'
+                    }));
+
+                    calendarEl.innerHTML = ''; // Clear loading message
+
+                    calendarInstance = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                        },
+                        events: fcEvents,
+                        editable: false,
+                        selectable: false,
+                        height: 'auto', 
+                        aspectRatio: 1.8, 
+                        eventTimeFormat: {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            meridiem: 'short'
+                        },
+                        eventClick: function(info) {
+                            info.jsEvent.preventDefault(); 
+                            const event = info.event;
+                            const props = event.extendedProps;
+                            
+                            let modalMessageHtml = `<p><strong>Starts:</strong> ${event.start ? event.start.toLocaleString() : 'N/A'}</p>
+                                                <p><strong>Ends:</strong> ${event.end ? event.end.toLocaleString() : 'N/A'}</p>`;
+                            if (props.location) {
+                                modalMessageHtml += `<p><strong>Location:</strong> ${escapeHtml(props.location)}</p>`;
+                            }
+                            if (props.description) {
+                                modalMessageHtml += `<div class="event-description-container"><strong>Description:</strong><div class="event-description-content">${escapeHtml(props.description)}</div></div>`;
+                            } else {
+                                modalMessageHtml += `<p>No description available.</p>`;
+                            }
+
+                            showModal(
+                                `Event: ${escapeHtml(event.title)}`,
+                                modalMessageHtml,
+                                () => {}, // Confirm callback (just closes)
+                                null,     // No cancel callback needed
+                                'Close',  // Confirm button text
+                                ''        // Empty cancel button text (hides cancel button via modal logic)
+                            );
+                        }
+                    });
+                    calendarInstance.render();
+
+                } catch (error) {
+                    console.error('Failed to load events for calendar:', error);
+                    showToast('Failed to load events: ' + (error.message || 'Unknown error'), 'error');
+                    calendarEl.innerHTML = '<p>Could not load events. Please try again later.</p>';
+                }
+            } else {
+                // Calendar already initialized, ensure it's visible and sized correctly if needed
+                calendarInstance.updateSize(); 
+            }
         }
         
         function logout() {

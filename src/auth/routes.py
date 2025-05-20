@@ -99,6 +99,8 @@ def get_started(
         email = user.email,
         name = f"{user.first_name} {user.last_name}",
         level = user.level,
+        department = user.department,
+        phone_number = user.phone_number,
         hashed_password = hash_password(user.password),
     )
     db.add(new_user)
@@ -110,6 +112,8 @@ def get_started(
         name = new_user.name,
         email = new_user.email,
         level = new_user.level,
+        department=new_user.department,
+        phone_number=new_user.phone_number,
         profile_photo_url= new_user.avatar_url
     )
 
@@ -130,8 +134,8 @@ def update_user_profile(
         current_user.name = f"{first_name} {last_name}"
     
     # Update profile photo if provided
-    if user_update.profile_photo_url:
-        current_user.avatar_url = user_update.profile_photo_url
+    # if user_update.profile_photo_url:
+    #     current_user.avatar_url = user_update.profile_photo_url
     
     # Save changes to database
     db.commit()
@@ -221,6 +225,8 @@ def get_all_users(
             email=user.email,
             name=user.name,
             level=user.level,
+            phone_number=user.phone_number,
+            department=user.department,
             profile_photo_url=user.avatar_url,
         ))
     return result  
@@ -284,9 +290,9 @@ def admin_update_user_details(
         )
         user.name = f"{first_name} {last_name}"
     
-    # Update profile photo if provided
-    if user_update.profile_photo_url:
-        user.avatar_url = user_update.profile_photo_url
+    # # Update profile photo if provided
+    # if user_update.profile_photo_url:
+    #     user.avatar_url = user_update.profile_photo_url
     
     # Save changes to database
     db.commit()
@@ -319,5 +325,7 @@ def get_current_user_profile(
         name=current_user.name,
         email=current_user.email,
         level=current_user.level,
+        department=current_user.department,
+        phone_number=current_user.phone_number,
         profile_photo_url=current_user.avatar_url
     )
