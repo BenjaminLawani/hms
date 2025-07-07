@@ -228,8 +228,7 @@ def bulk_allocate(
 def vacate_room(
     allocation_id: str,
     db: Session = Depends(get_db)
-):# DATABASE_URL = "postgresql://neondb_owner:npg_h1kcoDU0CRZt@ep-summer-recipe-a4uz82i9-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&options=endpoint%3Dep-summer-recipe-a4uz82i9"
-
+):
     """Mark a room as vacated"""
     service = RoomAllocationService(db)
     try:
