@@ -4,7 +4,6 @@ from src.common.enums import AllocationStatus
 from datetime import datetime
 import logging
 
-# Make sure these imports match your actual project structure
 from src.hostels.models import RoomAllocation, Room, Hall
 
 class AccountDeletionHandler:
